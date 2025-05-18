@@ -1,0 +1,3 @@
+function openDocument(){
+    alert('TEST');
+}
