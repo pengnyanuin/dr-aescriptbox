@@ -1,3 +1,3 @@
 function openDocument(){
-    alert('TEST');
+    return 'AAAAAAAAAAAAAA';
 }
