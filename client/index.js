@@ -43,6 +43,7 @@ const DrAeToolkit = {
         configSaveButton.addEventListener('click', DrAeToolkit.closeConfig);
 
         DrAeToolkit.extensionSetup()
+        DrAeToolkit.displayFeedback("Extension initiated")
     },
 
     extensionSetup: async function() {
@@ -63,6 +64,7 @@ const DrAeToolkit = {
                     workingScripts.push({
                         'scriptPath': DrAeToolkit.escapeString(scriptPath),
                         'buttonName': script.replace(/\.jsx$/, ''),
+                        'scriptName': script
                     })
                 }
             }
@@ -76,8 +78,7 @@ const DrAeToolkit = {
 
                 button.addEventListener('click', () => {
                     csInterface.evalScript('draetk_runScript("' + script.scriptPath + '")', (result) => {
-                        // document.getElementById('debug').innerText = 'DONE';
-                        DrAeToolkit.displayFeedback('DONE')
+                        DrAeToolkit.displayFeedback("Run " + script.scriptName)
                     });
                 });
 
@@ -169,6 +170,7 @@ const DrAeToolkit = {
         }
 
         DrAeToolkit.extensionSetup();
+        DrAeToolkit.displayFeedback("Config saved!")
     },
 
     ensureFolder: function(path) {
@@ -183,6 +185,8 @@ const DrAeToolkit = {
     },
 
     displayFeedback: function(string) {
+        const feedbackWrapper = document.getElementsByClassName('js-feedback')[0];
+        feedbackWrapper.innerText = string;
     }
 }
 
