@@ -1,0 +1,214 @@
+:root {
+    --btn-bg: #333333;
+    --btn-hover-bg: #555555;
+    --active-color: #4096f3;
+    --active-hover-color: #70b0f6;
+    --main-bg: #1e1e1e;
+    --border-radius: .3rem;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: var(--border-radius)
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--btn-bg);
+    border-radius: var(--border-radius)
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--btn-hover-bg);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    color: #ffffff;
+    font-family: "Adobe Clean", "Myriad Pro", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+    font-size: 12px;
+}
+
+button {
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+    box-shadow: none;
+}
+
+.btn {
+    padding: 3px 10px;
+    background: var(--active-color);
+    border-radius: var(--border-radius);
+}
+
+.btn:hover {
+    background: var(--active-hover-color);
+}
+
+.intro-row {
+    display: flex;
+    justify-content: space-between;
+    line-height: 18px;
+    margin-bottom: 8px;
+}
+
+.intro-row__feedback::before {
+    content: '> ';
+    display: inline;
+}
+
+.config-btn {
+    display: flex;
+    padding: 3px;
+    background: var(--btn-bg);
+    transition: background .2s ease-out;
+    border-radius: var(--border-radius);
+}
+
+.config-btn:hover {
+    background: var(--btn-hover-bg);
+}
+
+.config-btn img {
+    width: 1rem;
+}
+
+.config {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: none;
+    height: 100%;
+    flex-direction: column;
+    padding: 8px;
+    background: var(--main-bg);
+}
+
+.config.open {
+    display: flex;
+}
+
+.config__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.config__header__title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.config__content {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    overflow-y: auto;
+    margin-top: 8px;
+}
+
+.config__content label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .3rem;
+}
+
+.config__content label .text-wrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.config__footer {
+    display: flex;
+    align-items: flex-end;
+}
+
+.config__footer {
+    margin-top: 8px;
+}
+
+.config .checkbox-wrap {
+    margin-top: 3px;
+}
+
+.config .checkbox-wrap input {
+    position: relative;
+    appearance: none;
+    background-color: var(--btn-bg);
+    border-radius: 100px;
+    border-style: none;
+    flex-shrink: 0;
+    height: 12px;
+    margin: 0;
+    width: 20px;
+}
+
+.config .checkbox-wrap input::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    bottom: -6px;
+    left: -6px;
+}
+
+.config .checkbox-wrap input,
+.config .checkbox-wrap input::after {
+    transition: all .1s ease-out;
+}
+
+.config .checkbox-wrap input::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    height: 10px;
+    width: 10px;
+    background-color: #ffffff;
+    border-radius: 50%;
+}
+
+.config .checkbox-wrap input[type=checkbox] {
+    cursor: default;
+}
+
+.config .checkbox-wrap input:hover {
+    background-color: var(--btn-hover-bg);
+    transition-duration: 0s;
+}
+
+.config .checkbox-wrap input:checked {
+    background-color: var(--active-color);
+}
+
+.config .checkbox-wrap input:checked::after {
+    left: 9px;
+}
+
+.config .checkbox-wrap :focus {
+    outline: 0;
+}
+
+.config .checkbox-wrap input:checked:hover {
+    background-color: var(--active-hover-color);
+}

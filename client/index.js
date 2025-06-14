@@ -31,12 +31,14 @@ const DrAeToolkit = {
 
         const configOpenButton = document.getElementsByClassName('js-open-config')[0];
         const configCloseButton = document.getElementsByClassName('js-close-config')[0];
+        const configSaveButton = document.getElementsByClassName('js-save-config')[0];
         configOpenButton.addEventListener('click', DrAeToolkit.openConfig);
         configCloseButton.addEventListener('click', DrAeToolkit.closeConfig);
+        configSaveButton.addEventListener('click', DrAeToolkit.saveConfig);
+        configSaveButton.addEventListener('click', DrAeToolkit.closeConfig);
 
         DrAeToolkit.extensionSetup()
     },
-
 
     extensionSetup: async function() {
         try {
@@ -85,6 +87,7 @@ const DrAeToolkit = {
     configSetup: async function () {
         const configContent = document.getElementsByClassName('js-config-content')[0];
         const scriptsFilesResult = await DrAeToolkit.evalScriptAsync('draetk_getScriptsFolderContent()');
+        const configScripts = DrAeToolkit.CONFIG.scripts;
         const scriptsFiles = JSON.parse(scriptsFilesResult);
 
         for (const script of scriptsFiles) {
@@ -93,13 +96,19 @@ const DrAeToolkit = {
             const textWrap = document.createElement('span');
             const checkboxWrap = document.createElement('span');
             checkbox.type = 'checkbox';
-            textWrap.innerText = 'This is label of ' + script;
+            checkbox.name = script;
+            textWrap.innerText = decodeURIComponent(script);
             checkboxWrap.classList.add('checkbox-wrap')
+            textWrap.classList.add('text-wrap')
 
             configContent.appendChild(label);
             label.appendChild(checkboxWrap);
             label.appendChild(textWrap);
             checkboxWrap.appendChild(checkbox);
+
+            if (configScripts.includes(script) || configScripts.includes(decodeURIComponent(script))) {
+                checkbox.checked = true;
+            }
         }
     },
 
@@ -134,8 +143,19 @@ const DrAeToolkit = {
         configWrap.classList.remove('open');
     },
 
-    displayFeedback: function(string) {
+    saveConfig: function() {
+        const configContent = document.getElementsByClassName('js-config-content')[0];
+        const selectedScriptsList = configContent.querySelectorAll('input[type=checkbox]:checked');
+        let selectedScripts = [];
+        selectedScriptsList.forEach(selectedScript => {
+            selectedScripts.push(decodeURIComponent(selectedScript.name));
+        })
 
+        // todo save to json file
+        document.getElementById('debug').innerText = JSON.stringify(selectedScripts);
+    },
+
+    displayFeedback: function(string) {
     }
 }
 

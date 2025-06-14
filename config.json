@@ -1,5 +1,6 @@
 {
   "scripts": [
-    "MaskColor.jsx"
+    "MaskColor.jsx",
+    "Change Render Locations.jsx"
   ]
 }
