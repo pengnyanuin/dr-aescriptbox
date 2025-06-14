@@ -4,28 +4,100 @@
     <meta charset="utf-8">
     <title>Your First Panel</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             color: white;
             font-family: "Adobe Clean", "Myriad Pro", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            overflow: hidden;
+            font-size: 12px;
+        }
+
+        button {
+            background: none;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            font: inherit;
+            color: inherit;
+            cursor: pointer;
+            outline: none;
+            box-shadow: none;
         }
 
         pre {
             padding: 20px;
         }
+
+        .intro-row {
+            display: flex;
+            justify-content: space-between;
+            line-height: 18px;
+        }
+
+        .intro-row__feedback::before {
+            content: '> ';
+            display: inline;
+        }
+
+        .config-btn {
+            display: flex;
+            padding: 3px;
+            background: #333333;
+            transition: background .2s ease;
+            border-radius: .3rem;
+        }
+
+        .config-btn:hover {
+            background: #555555;
+        }
+
+        .config-btn img {
+            width: 1rem;
+        }
+
+        .config {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            display: none;
+            background: red;
+            padding: 8px;
+        }
+
+        .config__intro-row {
+            display: flex;
+            justify-content: space-between;
+            line-height: 18px;
+        }
+
+        .config.open {
+            display: block;
+        }
     </style>
 </head>
 <body>
-<!-- 1) Simple HTML UI elements to get us started -->
-<h1>Your first panel</h1>
+<div class="js-config config">
+    <div class="config__intro-row">
+        <div>Config</div>
+        <button class="js-close-config config-btn"><img src="./icons/close.svg" alt="Icon" /></button>
+    </div>
+</div>
 
-<!-- 2) A button -->
-<button id="open-button">Open</button>
+<div class="intro-row">
+    <div class="js-feedback intro-row__feedback">AA</div>
+    <button class="js-open-config config-btn"><img src="./icons/config.svg" alt="Icon" /></button>
+</div>
+<div class="js-buttons-wrap"></div>
+
+<hr />
 <button id="test-button">Run TEST</button>
-<button id="script-mask-color">Mask color</button>
-
 <pre id="debug">111</pre>
 
-<!-- 3) Add your script dependencies here, including CEP's CSInterface.js library -->
 <script type="text/javascript" src="CSInterface.js"></script>
 <script type="text/javascript" src="index.js"></script>
 </body>
