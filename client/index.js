@@ -6,6 +6,8 @@ window.onload = () => {
 
 const DrAeToolkit = {
     CONFIG_LOADED: false,
+    CONFIG_FILE_PATH: null,
+    CONFIG_FILE_FOLDER_PATH: null,
     CONFIG: null,
 
     init: function () {
@@ -19,14 +21,17 @@ const DrAeToolkit = {
 
         // Get config data
         let config = null;
-        const extensionRoot = csInterface.getSystemPath(SystemPath.EXTENSION);
-        const configPath = extensionRoot + "/config.json";
-        const readConfigFileResult = window.cep.fs.readFile(configPath);
+        const userDataPath = csInterface.getSystemPath(SystemPath.USER_DATA);
+        DrAeToolkit.CONFIG_FILE_FOLDER_PATH = userDataPath + "/DrAeToolkit";
+        DrAeToolkit.CONFIG_FILE_PATH = DrAeToolkit.CONFIG_FILE_FOLDER_PATH + "/config.json";
+        const readConfigFileResult = window.cep.fs.readFile(DrAeToolkit.CONFIG_FILE_PATH);
         if (readConfigFileResult.err === 0) {
             DrAeToolkit.CONFIG = JSON.parse(readConfigFileResult.data);
         } else {
-            alert("Error reading config file.");
-            throw new Error('Error reading config file.');
+            // File not found, create default object
+            DrAeToolkit.CONFIG = {
+                "scripts": []
+            }
         }
 
         const configOpenButton = document.getElementsByClassName('js-open-config')[0];
@@ -146,13 +151,35 @@ const DrAeToolkit = {
     saveConfig: function() {
         const configContent = document.getElementsByClassName('js-config-content')[0];
         const selectedScriptsList = configContent.querySelectorAll('input[type=checkbox]:checked');
+
         let selectedScripts = [];
         selectedScriptsList.forEach(selectedScript => {
             selectedScripts.push(decodeURIComponent(selectedScript.name));
         })
 
-        // todo save to json file
-        document.getElementById('debug').innerText = JSON.stringify(selectedScripts);
+        if (!DrAeToolkit.ensureFolder(DrAeToolkit.CONFIG_FILE_FOLDER_PATH)) {
+            alert("Could not create config folder.");
+            return;
+        }
+
+        DrAeToolkit.CONFIG.scripts = selectedScripts;
+        const result = window.cep.fs.writeFile(DrAeToolkit.CONFIG_FILE_PATH, JSON.stringify(DrAeToolkit.CONFIG, null, 2));
+        if (result.err !== 0) {
+            alert("Error saving the config file.");
+        }
+
+        DrAeToolkit.extensionSetup();
+    },
+
+    ensureFolder: function(path) {
+        const result = window.cep.fs.readdir(path);
+        if (result.err === 0) {
+            // Folder exists
+            return true;
+        } else {
+            const createResult = window.cep.fs.makedir(path);
+            return createResult.err === 0;
+        }
     },
 
     displayFeedback: function(string) {
