@@ -4,12 +4,20 @@
     <meta charset="utf-8">
     <title>Your First Panel</title>
     <style>
+        :root {
+            --btn-bg: #333333;
+            --btn-hover-bg: #555555;
+            --active-color: #4096f3;
+            --active-hover-color: #70b0f6;
+            --main-bg: #1e1e1e;
+        }
+
         * {
             box-sizing: border-box;
         }
 
         body {
-            color: white;
+            color: #ffffff;
             font-family: "Adobe Clean", "Myriad Pro", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
             overflow: hidden;
             font-size: 12px;
@@ -45,13 +53,13 @@
         .config-btn {
             display: flex;
             padding: 3px;
-            background: #333333;
-            transition: background .2s ease;
+            background: var(--btn-bg);
+            transition: background .2s ease-out;
             border-radius: .3rem;
         }
 
         .config-btn:hover {
-            background: #555555;
+            background: var(--btn-hover-bg);
         }
 
         .config-btn img {
@@ -65,11 +73,11 @@
             bottom: 0;
             left: 0;
             display: none;
-            background: red;
+            background: var(--main-bg);
             padding: 8px;
         }
 
-        .config__intro-row {
+        .config__header {
             display: flex;
             justify-content: space-between;
             line-height: 18px;
@@ -78,13 +86,85 @@
         .config.open {
             display: block;
         }
+
+        .config label {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .config .checkbox-wrap input {
+            position: relative;
+            appearance: none;
+            background-color: var(--btn-bg);
+            border-radius: 100px;
+            border-style: none;
+            flex-shrink: 0;
+            height: 12px;
+            margin: 0;
+            width: 20px;
+        }
+
+        .config .checkbox-wrap input::before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            bottom: -6px;
+            left: -6px;
+        }
+
+        .config .checkbox-wrap input,
+        .config .checkbox-wrap input::after {
+            transition: all .1s ease-out;
+        }
+
+        .config .checkbox-wrap input::after {
+            content: "";
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            height: 10px;
+            width: 10px;
+            background-color: #ffffff;
+            border-radius: 50%;
+        }
+
+        .config .checkbox-wrap input[type=checkbox] {
+            cursor: default;
+        }
+
+        .config .checkbox-wrap input:hover {
+            background-color: var(--btn-hover-bg);
+            transition-duration: 0s;
+        }
+
+        .config .checkbox-wrap input:checked {
+            background-color: var(--active-color);
+        }
+
+        .config .checkbox-wrap input:checked::after {
+            left: 8px;
+        }
+
+        .config .checkbox-wrap :focus {
+            outline: 0;
+        }
+
+        .config .checkbox-wrap input:checked:hover {
+            background-color: var(--active-hover-color);
+        }
     </style>
 </head>
 <body>
 <div class="js-config config">
-    <div class="config__intro-row">
+    <div class="config__header">
         <div>Config</div>
         <button class="js-close-config config-btn"><img src="./icons/close.svg" alt="Icon" /></button>
+    </div>
+    <div class="js-config-content config__content"></div>
+    <div class="config__footer">
+
     </div>
 </div>
 

@@ -1,8 +1,27 @@
-function getScriptsFolder() {
+function draetk_getScriptsFolder() {
     return Folder.appPackage.fsName + "/Scripts/";
 }
 
-function checkIfFileExists(filePath) {
+function draetk_getScriptsFolderContent() {
+    var scriptsFolderPath = draetk_getScriptsFolder();
+
+    var folder = new Folder(scriptsFolderPath);
+
+    if (!folder.exists) {
+        alert("Folder does not exist: " + scriptsFolderPath);
+        return '';
+    }
+
+    var files = folder.getFiles("*.jsx");  // get all .jsx files
+    var fileNames = [];
+    for (var i = 0; i < files.length; i++) {
+        fileNames.push(files[i].name);
+    }
+
+    return JSON.stringify(fileNames);
+}
+
+function draetk_checkIfFileExists(filePath) {
     var file = new File(filePath);
 
     if (file.exists) {
@@ -12,7 +31,7 @@ function checkIfFileExists(filePath) {
     }
 }
 
-function runScript(scriptPath) {
+function draetk_runScript(scriptPath) {
     $.evalFile(scriptPath);
 }
 
