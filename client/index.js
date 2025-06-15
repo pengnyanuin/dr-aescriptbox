@@ -29,10 +29,12 @@ const DrAeToolkit = {
         const configOpenButton = document.getElementsByClassName('js-open-config')[0];
         const configCloseButton = document.getElementsByClassName('js-close-config')[0];
         const configSaveButton = document.getElementsByClassName('js-save-config')[0];
+        const configDetailedSwitchButton = document.getElementsByClassName('js-allow-editing')[0];
         configOpenButton.addEventListener('click', DrAeToolkit.openConfig);
         configCloseButton.addEventListener('click', DrAeToolkit.closeConfig);
         configSaveButton.addEventListener('click', DrAeToolkit.saveConfig);
         configSaveButton.addEventListener('click', DrAeToolkit.closeConfig);
+        configDetailedSwitchButton.addEventListener('click', DrAeToolkit.switchAllowEditing);
 
         DrAeToolkit.extensionSetup()
         DrAeToolkit.displayFeedback("Welcome to the toolkit!")
@@ -66,6 +68,7 @@ const DrAeToolkit = {
                 button.textContent = script.buttonName;
                 button.id = script.buttonName;
                 button.classList.add('tk-btn');
+                button.classList.add('js-grid-btn');
 
                 button.addEventListener('click', () => {
                     DrAeToolkit.displayFeedback("Run " + script.scriptName)
@@ -96,8 +99,8 @@ const DrAeToolkit = {
             checkbox.type = 'checkbox';
             checkbox.name = script;
             textWrap.innerText = decodeURIComponent(script);
-            checkboxWrap.classList.add('checkbox-wrap')
-            textWrap.classList.add('text-wrap')
+            checkboxWrap.classList.add('checkbox-wrap');
+            textWrap.classList.add('text-wrap');
 
             configContent.appendChild(label);
             label.appendChild(checkboxWrap);
@@ -163,6 +166,54 @@ const DrAeToolkit = {
 
         DrAeToolkit.extensionSetup();
         DrAeToolkit.displayFeedback("Config saved!")
+    },
+
+    switchAllowEditing: function () {
+        const configContent = document.getElementsByClassName('js-buttons-wrap')[0];
+
+        if (configContent.classList.contains('editing')) {
+            DrAeToolkit.closeAllowEditing();
+        } else {
+            DrAeToolkit.openAllowEditing();
+        }
+    },
+
+    openAllowEditing: function() {
+        const buttonWrap = document.getElementsByClassName('js-buttons-wrap')[0];
+        const buttons = buttonWrap.querySelectorAll('.js-grid-btn');
+        buttonWrap.classList.add('editing');
+
+
+        for (const button of buttons) {
+            const newDiv = document.createElement('div');
+            newDiv.innerHTML = button.innerHTML;
+            newDiv.className = button.className;
+            newDiv.id = button.id;
+
+            newDiv.classList.add('js-editing-temporary');
+
+            button.classList.add('hidden');
+            button.parentNode.insertBefore(newDiv, button.nextSibling);
+        }
+
+        DrAeToolkit.displayFeedback("Editing mode")
+    },
+
+    closeAllowEditing: function() {
+        const buttonWrap = document.getElementsByClassName('js-buttons-wrap')[0];
+        const divs = buttonWrap.querySelectorAll('.js-editing-temporary');
+        const buttons = buttonWrap.querySelectorAll('.js-grid-btn:not(.js-editing-temporary)');
+        buttonWrap.classList.remove('editing');
+
+        for (const button of buttons) {
+            button.classList.remove('hidden');
+        }
+
+        for (const div of divs) {
+            div.remove();
+        }
+
+        DrAeToolkit.displayFeedback("Finished editing the grid")
     },
 
     ensureFolder: function(path) {

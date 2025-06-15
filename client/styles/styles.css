@@ -26,6 +26,10 @@
     background: var(--btn-hover-bg);
 }
 
+.hidden {
+    display: none !important;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -70,6 +74,7 @@ button {
     padding: 5px 10px;
     background: var(--btn-bg);
     border-radius: var(--border-radius);
+    text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -90,6 +95,11 @@ button {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.intro-row__controls {
+    display: flex;
+    gap: .2rem;
 }
 
 .intro-row__feedback::before {
