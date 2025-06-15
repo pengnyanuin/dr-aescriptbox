@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Scripts toolkit</title>
     <link rel="stylesheet" type="text/css" href="styles/styles.css" />
+    <link rel="stylesheet" type="text/css" href="libs/gridstack/gridstack.min.css" />
 </head>
 <body>
 <div class="js-config config">
@@ -22,13 +23,17 @@
 <div class="intro-row">
     <div class="js-feedback intro-row__feedback"></div>
     <div class="intro-row__controls">
+        <button class="js-save-editing btn hidden">Save</button>
         <button class="js-allow-editing config-btn" title="Allow editing buttons"><img src="./icons/edit.svg" alt="Icon" /></button>
         <button class="js-open-config config-btn" title="Open settings"><img src="./icons/config.svg" alt="Icon" /></button>
     </div>
 </div>
 
-<div class="button-grid js-buttons-wrap"></div>
+<div class="button-grid js-buttons-wrap">
+    <div class="grid-stack"></div>
+</div>
 
+<script type="text/javascript" src="libs/gridstack/gridstack-all.js"></script>
 <script type="text/javascript" src="CSInterface.js"></script>
 <script type="text/javascript" src="index.js"></script>
 </body>

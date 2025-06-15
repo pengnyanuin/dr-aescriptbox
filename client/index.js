@@ -9,6 +9,7 @@ const DrAeToolkit = {
     CONFIG_FILE_PATH: null,
     CONFIG_FILE_FOLDER_PATH: null,
     CONFIG: null,
+    GRID_STACK_INSTANCE: null,
 
     init: function () {
         // Get config data
@@ -22,9 +23,13 @@ const DrAeToolkit = {
         } else {
             // File not found, create default object
             DrAeToolkit.CONFIG = {
-                "scripts": []
+                "scripts": {}
             }
         }
+
+        const saveEditingButton = document.getElementsByClassName('js-save-editing')[0];
+        // saveEditingButton.addEventListener('click', DrAeToolkit.closeAllowEditing); // todo after save
+        saveEditingButton.addEventListener('click', DrAeToolkit.saveGridEditing);
 
         const configOpenButton = document.getElementsByClassName('js-open-config')[0];
         const configCloseButton = document.getElementsByClassName('js-close-config')[0];
@@ -32,8 +37,8 @@ const DrAeToolkit = {
         const configDetailedSwitchButton = document.getElementsByClassName('js-allow-editing')[0];
         configOpenButton.addEventListener('click', DrAeToolkit.openConfig);
         configCloseButton.addEventListener('click', DrAeToolkit.closeConfig);
-        configSaveButton.addEventListener('click', DrAeToolkit.saveConfig);
         configSaveButton.addEventListener('click', DrAeToolkit.closeConfig);
+        configSaveButton.addEventListener('click', DrAeToolkit.saveConfig);
         configDetailedSwitchButton.addEventListener('click', DrAeToolkit.switchAllowEditing);
 
         DrAeToolkit.extensionSetup()
@@ -43,22 +48,24 @@ const DrAeToolkit = {
     extensionSetup: async function() {
         try {
             const buttonWrap = document.getElementsByClassName('js-buttons-wrap')[0];
-            buttonWrap.innerHTML = '';
+            DrAeToolkit.resetButtonWrap();
 
             let workingScripts = [];
             const scriptsFolder = await DrAeToolkit.evalScriptAsync('draetk_getScriptsFolder()');
             const configScripts = DrAeToolkit.CONFIG.scripts;
 
-            for (const script of configScripts) {
-                const scriptPath = scriptsFolder + script;
+            for (const scriptKey in configScripts) {
+                const script = configScripts[scriptKey];
+                const scriptPath = scriptsFolder + script.name;
                 const fileExistsResult = await DrAeToolkit.evalScriptAsync('draetk_checkIfFileExists("' + DrAeToolkit.escapeString(scriptPath) + '")');
                 const fileExists = fileExistsResult === '1';
 
                 if (fileExists) {
                     workingScripts.push({
                         'scriptPath': DrAeToolkit.escapeString(scriptPath),
-                        'buttonName': script.replace(/\.jsx$/, ''),
-                        'scriptName': script
+                        'buttonName': script.buttonName,
+                        'scriptName': script.name,
+                        'scriptKey': scriptKey
                     })
                 }
             }
@@ -66,9 +73,10 @@ const DrAeToolkit = {
             for (const script of workingScripts) {
                 const button = document.createElement('button');
                 button.textContent = script.buttonName;
-                button.id = script.buttonName;
+                button.id = script.scriptName;
                 button.classList.add('tk-btn');
                 button.classList.add('js-grid-btn');
+                button.setAttribute('data-script-key', script.scriptKey);
 
                 button.addEventListener('click', () => {
                     DrAeToolkit.displayFeedback("Run " + script.scriptName)
@@ -79,7 +87,6 @@ const DrAeToolkit = {
 
                 buttonWrap.appendChild(button);
             }
-
         } catch (error) {
             alert(error);
         }
@@ -107,7 +114,7 @@ const DrAeToolkit = {
             label.appendChild(textWrap);
             checkboxWrap.appendChild(checkbox);
 
-            if (configScripts.includes(script) || configScripts.includes(decodeURIComponent(script))) {
+            if (Object.values(configScripts).some(s => s.name === script) || Object.values(configScripts).some( s => s.name === decodeURIComponent(script))) {
                 checkbox.checked = true;
             }
         }
@@ -142,15 +149,24 @@ const DrAeToolkit = {
     closeConfig: function() {
         const configWrap = document.getElementsByClassName('js-config')[0];
         configWrap.classList.remove('open');
+
+        DrAeToolkit.closeAllowEditing();
     },
 
     saveConfig: function() {
         const configContent = document.getElementsByClassName('js-config-content')[0];
         const selectedScriptsList = configContent.querySelectorAll('input[type=checkbox]:checked');
 
-        let selectedScripts = [];
+        let selectedScripts = {};
         selectedScriptsList.forEach(selectedScript => {
-            selectedScripts.push(decodeURIComponent(selectedScript.name));
+            const selectedScriptData = {
+                name: decodeURIComponent(selectedScript.name),
+                buttonName: decodeURIComponent(selectedScript.name).replace(/\.jsx$/, ''),
+                width: 2,
+                height: 1,
+            };
+
+            selectedScripts[selectedScript.name] = selectedScriptData;
         })
 
         if (!DrAeToolkit.ensureFolder(DrAeToolkit.CONFIG_FILE_FOLDER_PATH)) {
@@ -180,28 +196,40 @@ const DrAeToolkit = {
 
     openAllowEditing: function() {
         const buttonWrap = document.getElementsByClassName('js-buttons-wrap')[0];
+        const gridStackContainer = document.querySelector('.grid-stack');
         const buttons = buttonWrap.querySelectorAll('.js-grid-btn');
         buttonWrap.classList.add('editing');
 
-
         for (const button of buttons) {
             const newDiv = document.createElement('div');
+            const gridWrapper = document.createElement('div');
+            const contentWrapper = document.createElement('div');
             newDiv.innerHTML = button.innerHTML;
             newDiv.className = button.className;
             newDiv.id = button.id;
+            gridWrapper.classList.add('grid-stack-item');
+            contentWrapper.classList.add('grid-stack-item-content');
+            gridWrapper.setAttribute('data-script-key', button.getAttribute('data-script-key'));
 
             newDiv.classList.add('js-editing-temporary');
-
+            newDiv.classList.add('grid-btn');
             button.classList.add('hidden');
-            button.parentNode.insertBefore(newDiv, button.nextSibling);
+
+            gridWrapper.appendChild(contentWrapper);
+            contentWrapper.appendChild(newDiv);
+            gridStackContainer.appendChild(gridWrapper)
         }
 
-        DrAeToolkit.displayFeedback("Editing mode")
+        DrAeToolkit.initGridStack();
+        DrAeToolkit.displayFeedback("Editing mode");
+
+        const saveButton = document.getElementsByClassName('js-save-editing')[0];
+        saveButton.classList.remove('hidden');
     },
 
     closeAllowEditing: function() {
         const buttonWrap = document.getElementsByClassName('js-buttons-wrap')[0];
-        const divs = buttonWrap.querySelectorAll('.js-editing-temporary');
+        const gridStackContainer = document.querySelector('.grid-stack');
         const buttons = buttonWrap.querySelectorAll('.js-grid-btn:not(.js-editing-temporary)');
         buttonWrap.classList.remove('editing');
 
@@ -209,11 +237,28 @@ const DrAeToolkit = {
             button.classList.remove('hidden');
         }
 
-        for (const div of divs) {
-            div.remove();
+        DrAeToolkit.GRID_STACK_INSTANCE.destroy(false);
+
+        for (const child of Array.from(gridStackContainer.children)) {
+            gridStackContainer.removeChild(child);
         }
 
-        DrAeToolkit.displayFeedback("Finished editing the grid")
+        DrAeToolkit.displayFeedback("Cancelled editing the grid");
+
+        const saveButton = document.getElementsByClassName('js-save-editing')[0];
+        saveButton.classList.add('hidden');
+    },
+
+    saveGridEditing: function() {
+        const gridItems = DrAeToolkit.GRID_STACK_INSTANCE.getGridItems();
+
+        for(const gridItem of gridItems) {
+            const scriptKey = gridItem.getAttribute('data-script-key');
+
+            // todo save grid settings
+        }
+
+        DrAeToolkit.displayFeedback("Grid settings saved!");
     },
 
     ensureFolder: function(path) {
@@ -230,6 +275,26 @@ const DrAeToolkit = {
     displayFeedback: function(string) {
         const feedbackWrapper = document.getElementsByClassName('js-feedback')[0];
         feedbackWrapper.innerText = string;
+    },
+
+    resetButtonWrap: function () {
+        const buttonWrap = document.getElementsByClassName('js-buttons-wrap')[0];
+
+        for (const child of Array.from(buttonWrap.children)) {
+            if (!child.classList.contains('grid-stack')) {
+                buttonWrap.removeChild(child);
+            }
+        }
+    },
+
+    initGridStack: function () {
+        // todo allow grid width and height setting
+        const gridStackOptions = {
+            alwaysShowResizeHandle: false,
+            column: 4,
+            margin: '.2rem',
+        };
+        DrAeToolkit.GRID_STACK_INSTANCE = GridStack.init(gridStackOptions);
     }
 }
 
