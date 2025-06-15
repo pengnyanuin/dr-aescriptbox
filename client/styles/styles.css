@@ -59,11 +59,37 @@ button {
     background: var(--active-hover-color);
 }
 
+.button-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tk-btn {
+    display: block;
+    padding: 5px 10px;
+    background: var(--btn-bg);
+    border-radius: var(--border-radius);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tk-btn:hover {
+    background: var(--btn-hover-bg);
+}
+
 .intro-row {
     display: flex;
     justify-content: space-between;
     line-height: 18px;
     margin-bottom: 8px;
+}
+
+.intro-row__feedback {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .intro-row__feedback::before {

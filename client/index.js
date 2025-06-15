@@ -11,14 +11,6 @@ const DrAeToolkit = {
     CONFIG: null,
 
     init: function () {
-        // Test button
-        const testButton = document.querySelector("#test-button");
-        testButton.addEventListener('click', () => {
-            csInterface.evalScript('testScript()', (result) => {
-                document.getElementById('debug').innerText = 'result';
-            });
-        });
-
         // Get config data
         let config = null;
         const userDataPath = csInterface.getSystemPath(SystemPath.USER_DATA);
@@ -43,7 +35,7 @@ const DrAeToolkit = {
         configSaveButton.addEventListener('click', DrAeToolkit.closeConfig);
 
         DrAeToolkit.extensionSetup()
-        DrAeToolkit.displayFeedback("Extension initiated")
+        DrAeToolkit.displayFeedback("Welcome to the toolkit!")
     },
 
     extensionSetup: async function() {
@@ -69,16 +61,16 @@ const DrAeToolkit = {
                 }
             }
 
-            // document.getElementById('debug').innerText = JSON.stringify(workingScripts);
-
             for (const script of workingScripts) {
                 const button = document.createElement('button');
                 button.textContent = script.buttonName;
                 button.id = script.buttonName;
+                button.classList.add('tk-btn');
 
                 button.addEventListener('click', () => {
+                    DrAeToolkit.displayFeedback("Run " + script.scriptName)
                     csInterface.evalScript('draetk_runScript("' + script.scriptPath + '")', (result) => {
-                        DrAeToolkit.displayFeedback("Run " + script.scriptName)
+                        DrAeToolkit.displayFeedback("Finished " + script.scriptName)
                     });
                 });
 
