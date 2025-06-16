@@ -39,6 +39,7 @@ body {
     font-family: "Adobe Clean", "Myriad Pro", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     overflow: hidden;
     font-size: 12px;
+    margin: .3rem;
 }
 
 button {
@@ -51,6 +52,27 @@ button {
     cursor: pointer;
     outline: none;
     box-shadow: none;
+}
+
+input {
+    display: inline-block;
+    background: var(--btn-bg);
+    border: none;
+    padding: .2rem;
+    margin: 0;
+    outline: none;
+    color: #ffffff;
+    line-height: 1;
+}
+
+input:focus {
+    background: var(--btn-hover-bg);
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .btn {
@@ -134,7 +156,7 @@ button {
     display: none;
     height: 100%;
     flex-direction: column;
-    padding: 8px;
+    margin: .3rem;
     background: var(--main-bg);
 }
 
@@ -153,6 +175,11 @@ button {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.config__header__controls {
+    display: flex;
+    gap: .2rem;
 }
 
 .config__content {
@@ -176,13 +203,45 @@ button {
     text-overflow: ellipsis;
 }
 
-.config__footer {
+.config__content__section {
     display: flex;
-    align-items: flex-end;
+    flex-direction: column;
+    margin-right: .3rem;
 }
 
-.config__footer {
-    margin-top: 8px;
+.config__content__section--paddings {
+    gap: .2rem;
+}
+
+.config__content__section:not(:last-child) {
+    padding-bottom: .2rem;
+}
+
+.config__content__section + .config__content__section {
+    padding-top: .2rem;
+    border-top: 1px solid var(--btn-hover-bg);
+}
+
+.config__content__option {
+    display: flex;
+}
+
+.config__content__option__title {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.config__content__option__input-wrapper {
+    flex-shrink: 0;
+    flex-grow: 0;
+    width: 2rem;
+    text-align: right;
+}
+
+.config__content__option__input-wrapper input[type=number] {
+    max-width: 100%;
 }
 
 .config .checkbox-wrap {
@@ -249,6 +308,10 @@ button {
 
 .config .checkbox-wrap input:checked:hover {
     background-color: var(--active-hover-color);
+}
+
+.grid-stack {
+    margin: 0 -.2rem;
 }
 
 .grid-stack .grid-stack-item > .ui-resizable-se {

@@ -23,6 +23,11 @@ const DrAeToolkit = {
         } else {
             // File not found, create default object
             DrAeToolkit.CONFIG = {
+                "options": {
+                    "columns": 4,
+                    "cellWidth": null,
+                    "cellHeight": null
+                },
                 "scripts": {}
             }
         }
@@ -117,6 +122,7 @@ const DrAeToolkit = {
 
     configSetup: async function () {
         const configContent = document.getElementsByClassName('js-config-content')[0];
+        const configOptions = document.querySelectorAll('.js-config-option');
         const scriptsFilesResult = await DrAeToolkit.evalScriptAsync('draetk_getScriptsFolderContent()');
         const configScripts = DrAeToolkit.CONFIG.scripts;
         const scriptsFiles = JSON.parse(scriptsFilesResult);
@@ -140,6 +146,10 @@ const DrAeToolkit = {
             if (Object.values(configScripts).some(s => s.name === script) || Object.values(configScripts).some( s => s.name === decodeURIComponent(script))) {
                 checkbox.checked = true;
             }
+        }
+
+        for (const option of configOptions) {
+            option.value = DrAeToolkit.CONFIG.options[option.name]
         }
     },
 
@@ -179,6 +189,7 @@ const DrAeToolkit = {
     saveConfig: function() {
         let config = JSON.parse(JSON.stringify(DrAeToolkit.CONFIG));
         const configContent = document.getElementsByClassName('js-config-content')[0];
+        const configOptions = document.querySelectorAll('.js-config-option');
         const selectedScriptsList = configContent.querySelectorAll('input[type=checkbox]:checked');
 
         const selectedScriptsNames = new Set();
@@ -203,6 +214,30 @@ const DrAeToolkit = {
             if (!selectedScriptsNames.has(configScript)) {
                 delete config.scripts[configScript];
             }
+        }
+
+        for (const option of configOptions) {
+            let newValue = option.value;
+
+            if (newValue === '' && option.getAttribute('data-nullable')) {
+                newValue = null;
+            } else if (option.type === 'number') {
+                newValue = option.value ? parseInt(option.value) : 0;
+
+                const min = option.getAttribute('min');
+                const max = option.getAttribute('max');
+
+                if (min && (newValue < parseInt(min))) {
+                    newValue = min;
+                    option.value = newValue;
+                }
+                if (max && (newValue > parseInt(max))) {
+                    newValue = max;
+                }
+            }
+
+            config.options[option.name] = newValue;
+            option.value = newValue;
         }
 
         if (!DrAeToolkit.saveConfigSettings(config)) {
@@ -357,10 +392,11 @@ const DrAeToolkit = {
         // todo allow grid width and height setting
         const gridStackOptions = {
             alwaysShowResizeHandle: false,
-            column: 4,
+            column: DrAeToolkit.CONFIG.options.columns,
+            cellHeight: DrAeToolkit.CONFIG.options.cellHeight ? DrAeToolkit.CONFIG.options.cellHeight : 'auto',
             margin: '.2rem',
             staticGrid: true,
-            float: true,
+            float: false, // todo allow floating option
             draggable: {
                 scroll: false,
             }
