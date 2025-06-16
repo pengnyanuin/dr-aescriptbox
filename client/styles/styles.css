@@ -53,10 +53,6 @@ button {
     box-shadow: none;
 }
 
-.grid-stack .grid-stack-item {
-    /*overflow: hidden;*/
-}
-
 .btn {
     padding: 3px 10px;
     background: var(--active-color);
@@ -66,13 +62,6 @@ button {
 
 .btn:hover {
     background: var(--active-hover-color);
-}
-
-/* todo map to the grid visual */
-.button-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
 }
 
 .tk-btn {
@@ -260,4 +249,26 @@ button {
 
 .config .checkbox-wrap input:checked:hover {
     background-color: var(--active-hover-color);
+}
+
+.grid-stack .grid-stack-item > .ui-resizable-se {
+    right: -.2rem;
+    bottom: -.2rem;
+    transform: none;
+    border-radius: var(--border-radius);
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0" viewBox="0 0 20 20"><rect x="0" y="0" width="20" height="20" fill="%23333333" /><path stroke-width="2" d="m10 3 2 2H8l2-2v14l-2-2h4l-2 2" transform="rotate(-45 10 10) scale(0.8) translate(2.5 2.5)"/></svg>') no-repeat center;
+}
+
+.grid-stack .grid-stack-item > .ui-resizable-se:hover {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0" viewBox="0 0 20 20"><rect x="0" y="0" width="20" height="20" fill="%23555555" /><path stroke-width="2" d="m10 3 2 2H8l2-2v14l-2-2h4l-2 2" transform="rotate(-45 10 10) scale(0.8) translate(2.5 2.5)"/></svg>') no-repeat center;
+}
+
+.grid-stack .grid-stack-item.ui-resizable-autohide > .ui-rename {
+    display: none !important;
+}
+
+.grid-stack .grid-stack-item > .ui-rename {
+    position: absolute;
+    top: -.2rem;
+    right: -.2rem;
 }
