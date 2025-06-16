@@ -1,9 +1,9 @@
-function draetk_getScriptsFolder() {
+function draesb_getScriptsFolder() {
     return Folder.appPackage.fsName + "/Scripts/";
 }
 
-function draetk_getScriptsFolderContent() {
-    var scriptsFolderPath = draetk_getScriptsFolder();
+function draesb_getScriptsFolderContent() {
+    var scriptsFolderPath = draesb_getScriptsFolder();
 
     var folder = new Folder(scriptsFolderPath);
 
@@ -21,7 +21,7 @@ function draetk_getScriptsFolderContent() {
     return JSON.stringify(fileNames);
 }
 
-function draetk_checkIfFileExists(filePath) {
+function draesb_checkIfFileExists(filePath) {
     var file = new File(filePath);
 
     if (file.exists) {
@@ -31,7 +31,7 @@ function draetk_checkIfFileExists(filePath) {
     }
 }
 
-function draetk_runScript(scriptPath) {
+function draesb_runScript(scriptPath) {
     $.evalFile(scriptPath);
 }
 

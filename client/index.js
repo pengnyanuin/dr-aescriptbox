@@ -1,10 +1,10 @@
 const csInterface = new CSInterface();
 
 window.onload = () => {
-    DrAeToolkit.init();
+    DrAeScriptBox.init();
 };
 
-const DrAeToolkit = {
+const DrAeScriptBox = {
     CONFIG_LOADED: false,
     CONFIG_FILE_PATH: null,
     CONFIG_FILE_FOLDER_PATH: null,
@@ -15,14 +15,14 @@ const DrAeToolkit = {
         // Get config data
         let config = null;
         const userDataPath = csInterface.getSystemPath(SystemPath.USER_DATA);
-        DrAeToolkit.CONFIG_FILE_FOLDER_PATH = userDataPath + "/DrAeToolkit";
-        DrAeToolkit.CONFIG_FILE_PATH = DrAeToolkit.CONFIG_FILE_FOLDER_PATH + "/config.json";
-        const readConfigFileResult = window.cep.fs.readFile(DrAeToolkit.CONFIG_FILE_PATH);
+        DrAeScriptBox.CONFIG_FILE_FOLDER_PATH = userDataPath + "/DrAeScriptBox";
+        DrAeScriptBox.CONFIG_FILE_PATH = DrAeScriptBox.CONFIG_FILE_FOLDER_PATH + "/config.json";
+        const readConfigFileResult = window.cep.fs.readFile(DrAeScriptBox.CONFIG_FILE_PATH);
         if (readConfigFileResult.err === 0) {
-            DrAeToolkit.CONFIG = JSON.parse(readConfigFileResult.data);
+            DrAeScriptBox.CONFIG = JSON.parse(readConfigFileResult.data);
         } else {
             // File not found, create default object
-            DrAeToolkit.CONFIG = {
+            DrAeScriptBox.CONFIG = {
                 "options": {
                     "columns": 4,
                     "cellWidth": null,
@@ -33,41 +33,41 @@ const DrAeToolkit = {
         }
 
         const saveEditingButton = document.getElementsByClassName('js-save-editing')[0];
-        saveEditingButton.addEventListener('click', DrAeToolkit.closeAllowEditing);
-        saveEditingButton.addEventListener('click', DrAeToolkit.saveGridEditing);
+        saveEditingButton.addEventListener('click', DrAeScriptBox.closeAllowEditing);
+        saveEditingButton.addEventListener('click', DrAeScriptBox.saveGridEditing);
 
         const configOpenButton = document.getElementsByClassName('js-open-config')[0];
         const configCloseButton = document.getElementsByClassName('js-close-config')[0];
         const configSaveButton = document.getElementsByClassName('js-save-config')[0];
         const configDetailedSwitchButton = document.getElementsByClassName('js-allow-editing')[0];
-        configOpenButton.addEventListener('click', DrAeToolkit.openConfig);
-        configCloseButton.addEventListener('click', DrAeToolkit.closeConfig);
-        configSaveButton.addEventListener('click', DrAeToolkit.closeConfig);
-        configSaveButton.addEventListener('click', DrAeToolkit.saveConfig);
-        configDetailedSwitchButton.addEventListener('click', DrAeToolkit.switchAllowEditing);
+        configOpenButton.addEventListener('click', DrAeScriptBox.openConfig);
+        configCloseButton.addEventListener('click', DrAeScriptBox.closeConfig);
+        configSaveButton.addEventListener('click', DrAeScriptBox.closeConfig);
+        configSaveButton.addEventListener('click', DrAeScriptBox.saveConfig);
+        configDetailedSwitchButton.addEventListener('click', DrAeScriptBox.switchAllowEditing);
 
-        DrAeToolkit.extensionSetup()
-        DrAeToolkit.displayFeedback("Welcome to the toolkit!")
+        DrAeScriptBox.extensionSetup()
+        DrAeScriptBox.displayFeedback("Welcome!")
     },
 
     extensionSetup: async function() {
         try {
             const buttonWrap = document.getElementsByClassName('js-buttons-wrap')[0];
-            DrAeToolkit.cleanGridStack();
+            DrAeScriptBox.cleanGridStack();
 
             let workingScripts = [];
-            const scriptsFolder = await DrAeToolkit.evalScriptAsync('draetk_getScriptsFolder()');
-            const configScripts = DrAeToolkit.CONFIG.scripts;
+            const scriptsFolder = await DrAeScriptBox.evalScriptAsync('draesb_getScriptsFolder()');
+            const configScripts = DrAeScriptBox.CONFIG.scripts;
 
             for (const scriptKey in configScripts) {
                 const script = configScripts[scriptKey];
                 const scriptPath = scriptsFolder + script.name;
-                const fileExistsResult = await DrAeToolkit.evalScriptAsync('draetk_checkIfFileExists("' + DrAeToolkit.escapeString(scriptPath) + '")');
+                const fileExistsResult = await DrAeScriptBox.evalScriptAsync('draesb_checkIfFileExists("' + DrAeScriptBox.escapeString(scriptPath) + '")');
                 const fileExists = fileExistsResult === '1';
 
                 if (fileExists) {
                     workingScripts.push({
-                        scriptPath: DrAeToolkit.escapeString(scriptPath),
+                        scriptPath: DrAeScriptBox.escapeString(scriptPath),
                         buttonName: script.buttonName,
                         scriptName: script.name,
                         scriptKey: scriptKey,
@@ -103,9 +103,9 @@ const DrAeToolkit = {
                 }
 
                 button.addEventListener('click', () => {
-                    DrAeToolkit.displayFeedback("Run " + script.scriptName)
-                    csInterface.evalScript('draetk_runScript("' + script.scriptPath + '")', (result) => {
-                        DrAeToolkit.displayFeedback("Finished " + script.scriptName)
+                    DrAeScriptBox.displayFeedback("Run " + script.scriptName)
+                    csInterface.evalScript('draesb_runScript("' + script.scriptPath + '")', (result) => {
+                        DrAeScriptBox.displayFeedback("Finished " + script.scriptName)
                     });
                 });
 
@@ -114,7 +114,7 @@ const DrAeToolkit = {
                 buttonWrap.appendChild(gridWrapper);
             }
 
-            DrAeToolkit.initGridStack();
+            DrAeScriptBox.initGridStack();
         } catch (error) {
             alert(error);
         }
@@ -123,8 +123,8 @@ const DrAeToolkit = {
     configSetup: async function () {
         const configContent = document.getElementsByClassName('js-config-content')[0];
         const configOptions = document.querySelectorAll('.js-config-option');
-        const scriptsFilesResult = await DrAeToolkit.evalScriptAsync('draetk_getScriptsFolderContent()');
-        const configScripts = DrAeToolkit.CONFIG.scripts;
+        const scriptsFilesResult = await DrAeScriptBox.evalScriptAsync('draesb_getScriptsFolderContent()');
+        const configScripts = DrAeScriptBox.CONFIG.scripts;
         const scriptsFiles = JSON.parse(scriptsFilesResult);
 
         for (const script of scriptsFiles) {
@@ -149,7 +149,7 @@ const DrAeToolkit = {
         }
 
         for (const option of configOptions) {
-            option.value = DrAeToolkit.CONFIG.options[option.name]
+            option.value = DrAeScriptBox.CONFIG.options[option.name]
         }
     },
 
@@ -172,9 +172,9 @@ const DrAeToolkit = {
     openConfig: function() {
         const configWrap = document.getElementsByClassName('js-config')[0];
         configWrap.classList.add('open');
-        if (!DrAeToolkit.CONFIG_LOADED) {
-            DrAeToolkit.configSetup().then(() => {
-                DrAeToolkit.CONFIG_LOADED = true;
+        if (!DrAeScriptBox.CONFIG_LOADED) {
+            DrAeScriptBox.configSetup().then(() => {
+                DrAeScriptBox.CONFIG_LOADED = true;
             });
         }
     },
@@ -183,11 +183,11 @@ const DrAeToolkit = {
         const configWrap = document.getElementsByClassName('js-config')[0];
         configWrap.classList.remove('open');
 
-        DrAeToolkit.closeAllowEditing();
+        DrAeScriptBox.closeAllowEditing();
     },
 
     saveConfig: function() {
-        let config = JSON.parse(JSON.stringify(DrAeToolkit.CONFIG));
+        let config = JSON.parse(JSON.stringify(DrAeScriptBox.CONFIG));
         const configContent = document.getElementsByClassName('js-config-content')[0];
         const configOptions = document.querySelectorAll('.js-config-option');
         const selectedScriptsList = configContent.querySelectorAll('input[type=checkbox]:checked');
@@ -240,27 +240,27 @@ const DrAeToolkit = {
             option.value = newValue;
         }
 
-        if (!DrAeToolkit.saveConfigSettings(config)) {
+        if (!DrAeScriptBox.saveConfigSettings(config)) {
             return;
         }
 
-        DrAeToolkit.extensionSetup();
-        DrAeToolkit.displayFeedback("Config saved!")
+        DrAeScriptBox.extensionSetup();
+        DrAeScriptBox.displayFeedback("Config saved!")
     },
 
     saveConfigSettings(config) {
-        if (!DrAeToolkit.ensureFolder(DrAeToolkit.CONFIG_FILE_FOLDER_PATH)) {
+        if (!DrAeScriptBox.ensureFolder(DrAeScriptBox.CONFIG_FILE_FOLDER_PATH)) {
             alert("Could not create config folder.");
             return false;
         }
 
-        const result = window.cep.fs.writeFile(DrAeToolkit.CONFIG_FILE_PATH, JSON.stringify(config, null, 2));
+        const result = window.cep.fs.writeFile(DrAeScriptBox.CONFIG_FILE_PATH, JSON.stringify(config, null, 2));
         if (result.err !== 0) {
             alert("Error saving the config file.");
             return false;
         }
 
-        DrAeToolkit.CONFIG = config;
+        DrAeScriptBox.CONFIG = config;
         return true;
     },
 
@@ -268,9 +268,9 @@ const DrAeToolkit = {
         const configContent = document.getElementsByClassName('js-buttons-wrap')[0];
 
         if (configContent.classList.contains('editing')) {
-            DrAeToolkit.closeAllowEditing();
+            DrAeScriptBox.closeAllowEditing();
         } else {
-            DrAeToolkit.openAllowEditing();
+            DrAeScriptBox.openAllowEditing();
         }
     },
 
@@ -298,7 +298,7 @@ const DrAeToolkit = {
             editNameImg.alt = 'Edit'
 
             newEditNameButton.addEventListener('click', () => {
-                DrAeToolkit.changeButtonName(button.parentNode.parentNode)
+                DrAeScriptBox.changeButtonName(button.parentNode.parentNode)
             });
 
 
@@ -307,8 +307,8 @@ const DrAeToolkit = {
             button.parentNode.parentNode.appendChild(newEditNameButton);
         }
 
-        DrAeToolkit.GRID_STACK_INSTANCE.setStatic(false);
-        DrAeToolkit.displayFeedback('Editing mode');
+        DrAeScriptBox.GRID_STACK_INSTANCE.setStatic(false);
+        DrAeScriptBox.displayFeedback('Editing mode');
 
         const saveButton = document.getElementsByClassName('js-save-editing')[0];
         saveButton.classList.remove('hidden');
@@ -328,9 +328,9 @@ const DrAeToolkit = {
             });
         }
 
-        DrAeToolkit.GRID_STACK_INSTANCE.setStatic(true);
+        DrAeScriptBox.GRID_STACK_INSTANCE.setStatic(true);
 
-        DrAeToolkit.displayFeedback('Cancelled editing the grid');
+        DrAeScriptBox.displayFeedback('Cancelled editing the grid');
 
         // todo detect without saving? show unsaved changes?
 
@@ -339,12 +339,12 @@ const DrAeToolkit = {
     },
 
     saveGridEditing: function() {
-        const gridItems = DrAeToolkit.GRID_STACK_INSTANCE.getGridItems();
-        let config = JSON.parse(JSON.stringify(DrAeToolkit.CONFIG));
+        const gridItems = DrAeScriptBox.GRID_STACK_INSTANCE.getGridItems();
+        let config = JSON.parse(JSON.stringify(DrAeScriptBox.CONFIG));
 
         for(const gridItem of gridItems) {
             const scriptKey = gridItem.getAttribute('data-script-key');
-            const dimensions = DrAeToolkit.getGridItemDimensions(gridItem);
+            const dimensions = DrAeScriptBox.getGridItemDimensions(gridItem);
 
             if (config.scripts[scriptKey]) {
                 config.scripts[scriptKey].width = dimensions.width;
@@ -354,8 +354,8 @@ const DrAeToolkit = {
             }
         }
 
-        DrAeToolkit.saveConfigSettings(config);
-        DrAeToolkit.displayFeedback('Grid settings saved!');
+        DrAeScriptBox.saveConfigSettings(config);
+        DrAeScriptBox.displayFeedback('Grid settings saved!');
     },
 
     getGridItemDimensions: function (element) {
@@ -392,8 +392,8 @@ const DrAeToolkit = {
         // todo allow grid width and height setting
         const gridStackOptions = {
             alwaysShowResizeHandle: false,
-            column: DrAeToolkit.CONFIG.options.columns,
-            cellHeight: DrAeToolkit.CONFIG.options.cellHeight ? DrAeToolkit.CONFIG.options.cellHeight : 'auto',
+            column: DrAeScriptBox.CONFIG.options.columns,
+            cellHeight: DrAeScriptBox.CONFIG.options.cellHeight ? DrAeScriptBox.CONFIG.options.cellHeight : 'auto',
             margin: '.2rem',
             staticGrid: true,
             float: false, // todo allow floating option
@@ -401,16 +401,16 @@ const DrAeToolkit = {
                 scroll: false,
             }
         };
-        DrAeToolkit.GRID_STACK_INSTANCE = GridStack.init(gridStackOptions);
+        DrAeScriptBox.GRID_STACK_INSTANCE = GridStack.init(gridStackOptions);
     },
 
     cleanGridStack: function () {
-        if (!DrAeToolkit.GRID_STACK_INSTANCE) {
+        if (!DrAeScriptBox.GRID_STACK_INSTANCE) {
             return;
         }
 
-        const gridItems = DrAeToolkit.GRID_STACK_INSTANCE.getGridItems();
-        DrAeToolkit.GRID_STACK_INSTANCE.destroy(false);
+        const gridItems = DrAeScriptBox.GRID_STACK_INSTANCE.getGridItems();
+        DrAeScriptBox.GRID_STACK_INSTANCE.destroy(false);
 
         for (const gridItem of gridItems) {
             if (gridItem.classList.contains('grid-stack-item')) {
@@ -427,7 +427,7 @@ const DrAeToolkit = {
                 return;
             }
 
-            let config = JSON.parse(JSON.stringify(DrAeToolkit.CONFIG));
+            let config = JSON.parse(JSON.stringify(DrAeScriptBox.CONFIG));
 
             if (config.scripts[gridItem.getAttribute('data-script-key')] !== undefined) {
                 config.scripts[gridItem.getAttribute('data-script-key')].buttonName = userNewButtonName;
@@ -438,8 +438,8 @@ const DrAeToolkit = {
             temporaryButton.innerHTML = userNewButtonName;
 
             // todo save here? what is save button for then? maybe dont save?
-            DrAeToolkit.saveConfigSettings(config);
-            DrAeToolkit.displayFeedback('Button name changed!');
+            DrAeScriptBox.saveConfigSettings(config);
+            DrAeScriptBox.displayFeedback('Button name changed!');
         });
     }
 }

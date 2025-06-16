@@ -27,7 +27,7 @@
                 </Lifecycle>
                 <UI>
                     <Type>Panel</Type>
-                    <Menu>Scripts toolkit</Menu>
+                    <Menu>Script box</Menu>
                     <Geometry>
                         <Size>
                             <Height>500</Height>
