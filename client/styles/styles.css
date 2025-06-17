@@ -152,8 +152,8 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .intro-row {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    line-height: 18px;
     margin-bottom: 8px;
 }
 
@@ -182,8 +182,8 @@ input[type="number"]::-webkit-outer-spin-button {
     left: 0;
     display: none;
     flex-direction: column;
-    padding: .2rem .3rem;
     background: var(--main-bg);
+    padding: .3rem;
 }
 
 .config.open {
@@ -195,7 +195,6 @@ input[type="number"]::-webkit-outer-spin-button {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    line-height: 18px;
 }
 
 .config__header__title {
@@ -204,11 +203,14 @@ input[type="number"]::-webkit-outer-spin-button {
     text-overflow: ellipsis;
 }
 
+.config__header__title::before {
+    content: '> ';
+    display: inline;
+}
+
 .config__header__controls {
     display: flex;
     gap: .2rem;
-
-    /* todo fix moving buttons */
 }
 
 .config__content {
@@ -384,7 +386,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .grid-stack-item .editing {
     border-radius: var(--border-radius);
-    box-shadow: 0 0 5px 3px var(--active-color);
+    box-shadow: 0 0 5px 3px var(--editing-color);
 }
 
 .grid-stack-item:not(.ui-draggable-disabled) {

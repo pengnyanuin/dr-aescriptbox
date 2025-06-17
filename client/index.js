@@ -25,9 +25,9 @@ const DrAeScriptBox = {
             DrAeScriptBox.CONFIG = {
                 "ver": "1.0",
                 "options": {
-                    "columns": 4,
+                    "columns": 2,
                     "cellWidth": null,
-                    "cellHeight": null
+                    "cellHeight": 30
                 },
                 "scripts": {}
             }
