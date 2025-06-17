@@ -8,8 +8,9 @@
 </head>
 <body>
 <div class="js-config config">
+    <!-- Make header collapsible -->
     <div class="config__header">
-        <div class="config__header__title">Select scripts</div>
+        <div class="config__header__title">> Select scripts to display as buttons</div>
         <div class="config__header__controls">
             <button class="js-save-config btn">Save</button>
             <button class="js-close-config config-btn" title="Close settings without saving"><img src="./icons/close.svg" alt="Icon" /></button>
@@ -27,13 +28,13 @@
                 <span class="config__content__option__input-wrapper">
                     <input type="number" class="js-config-option" name="cellHeight" min="30" step="1" data-nullable="true" />
                 </span>
-                <span class="config__content__option__title">Set button height in px; Leave empty for squared buttons</span>
+                <span class="config__content__option__title">Set button height in px (30px min); Leave empty for squared buttons</span>
             </label>
             <label class="config__content__option">
                 <span class="config__content__option__input-wrapper">
                     <input type="number" class="js-config-option" name="cellWidth" min="30" step="1" data-nullable="true" />
                 </span>
-                <span class="config__content__option__title">Set button width in px; Leave empty for full width</span>
+                <span class="config__content__option__title">Set button width in px (30px min); Leave empty for full width</span>
             </label>
         </div>
         <div class="js-config-content config__content__section"></div>
@@ -43,9 +44,9 @@
 <div class="intro-row">
     <div class="js-feedback intro-row__feedback"></div>
     <div class="intro-row__controls">
-        <button class="js-save-editing btn hidden">Save</button>
-        <button class="js-allow-editing config-btn" title="Allow editing buttons"><img src="./icons/edit.svg" alt="Icon" /></button>
-        <button class="js-open-config config-btn" title="Open settings"><img src="./icons/config.svg" alt="Icon" /></button>
+        <button class="js-close-editing btn hidden btn--icon">Close editing mode</button>
+        <button class="js-allow-editing config-btn" title="Allow editing buttons"><img src="./icons/edit.svg" alt="Grid" /></button>
+        <button class="js-open-config config-btn" title="Open settings"><img src="./icons/config.svg" alt="Settings" /></button>
     </div>
 </div>
 

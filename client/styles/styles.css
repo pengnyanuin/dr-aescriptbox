@@ -3,6 +3,7 @@
     --btn-hover-bg: #555555;
     --active-color: #4096f3;
     --active-hover-color: #70b0f6;
+    --editing-color: #f6e270;
     --main-bg: #1e1e1e;
     --border-radius: .3rem;
 }
@@ -34,12 +35,22 @@
     box-sizing: border-box;
 }
 
+html {
+    height: 100vh;
+}
+
 body {
     color: #ffffff;
     font-family: "Adobe Clean", "Myriad Pro", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     overflow: hidden;
     font-size: 12px;
-    margin: .3rem;
+    padding: .1rem;
+    margin: .2rem;
+    height: calc(100% - .4rem);
+}
+
+body.editing {
+    outline: 1px solid var(--editing-color);
 }
 
 button {
@@ -61,6 +72,7 @@ input {
     padding: .2rem;
     margin: 0;
     outline: none;
+    font: inherit;
     color: #ffffff;
     line-height: 1;
 }
@@ -80,17 +92,48 @@ input[type="number"]::-webkit-outer-spin-button {
     background: var(--active-color);
     border-radius: var(--border-radius);
     line-height: 1;
+    width: auto;
+    height: 22px;
+    white-space: nowrap;
 }
 
 .btn:hover {
     background: var(--active-hover-color);
 }
 
+.btn--icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn--icon img {
+    height: 16px;
+}
+
+.config-btn {
+    display: flex;
+    padding: 3px;
+    width: 22px;
+    height: 22px;
+    background: var(--btn-bg);
+    transition: background .2s ease-out;
+    border-radius: var(--border-radius);
+}
+
+.config-btn:hover {
+    background: var(--btn-hover-bg);
+}
+
+.config-btn img {
+    width: 1rem;
+}
+
 .tk-btn {
     display: block;
     width: 100%;
     height: 100%;
-    padding: 5px 10px;
+    padding: 0 3px;
     background: var(--btn-bg);
     border-radius: var(--border-radius);
     text-align: center;
@@ -99,8 +142,8 @@ input[type="number"]::-webkit-outer-spin-button {
     text-overflow: ellipsis;
 }
 
-.tk-btn.grid-btn {
-    cursor: grab;
+.tk-btn.grid-btn.disabled {
+    pointer-events: none;
 }
 
 .tk-btn:hover {
@@ -130,22 +173,6 @@ input[type="number"]::-webkit-outer-spin-button {
     display: inline;
 }
 
-.config-btn {
-    display: flex;
-    padding: 3px;
-    background: var(--btn-bg);
-    transition: background .2s ease-out;
-    border-radius: var(--border-radius);
-}
-
-.config-btn:hover {
-    background: var(--btn-hover-bg);
-}
-
-.config-btn img {
-    width: 1rem;
-}
-
 .config {
     position: absolute;
     z-index: 1;
@@ -154,9 +181,8 @@ input[type="number"]::-webkit-outer-spin-button {
     bottom: 0;
     left: 0;
     display: none;
-    height: 100%;
     flex-direction: column;
-    margin: .3rem;
+    padding: .2rem .3rem;
     background: var(--main-bg);
 }
 
@@ -169,6 +195,7 @@ input[type="number"]::-webkit-outer-spin-button {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+    line-height: 18px;
 }
 
 .config__header__title {
@@ -188,6 +215,7 @@ input[type="number"]::-webkit-outer-spin-button {
     gap: .2rem;
     overflow-y: auto;
     margin-top: 8px;
+    height: 100%;
 }
 
 .config__content label {
@@ -314,9 +342,20 @@ input[type="number"]::-webkit-outer-spin-button {
     margin: 0 -.2rem;
 }
 
+.grid-stack.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    width: 100% !important;
+    max-width: 200px;
+    text-align: center;
+}
+
 .grid-stack .grid-stack-item > .ui-resizable-se {
-    right: -.2rem;
-    bottom: -.2rem;
+    right: -5px;
+    bottom: -5px;
     transform: none;
     border-radius: var(--border-radius);
     background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0" viewBox="0 0 20 20"><rect x="0" y="0" width="20" height="20" fill="%23333333" /><path stroke-width="2" d="m10 3 2 2H8l2-2v14l-2-2h4l-2 2" transform="rotate(-45 10 10) scale(0.8) translate(2.5 2.5)"/></svg>') no-repeat center;
@@ -326,12 +365,39 @@ input[type="number"]::-webkit-outer-spin-button {
     background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0" viewBox="0 0 20 20"><rect x="0" y="0" width="20" height="20" fill="%23555555" /><path stroke-width="2" d="m10 3 2 2H8l2-2v14l-2-2h4l-2 2" transform="rotate(-45 10 10) scale(0.8) translate(2.5 2.5)"/></svg>') no-repeat center;
 }
 
-.grid-stack .grid-stack-item.ui-resizable-autohide > .ui-rename {
+.grid-stack .grid-stack-item.ui-resizable-autohide > .ui-rename,
+.grid-stack .grid-stack-item.editing-name > .ui-resizable-se,
+.grid-stack .grid-stack-item.editing-name > .ui-rename {
     display: none !important;
 }
 
 .grid-stack .grid-stack-item > .ui-rename {
+    width: 20px;
+    height: 20px;
     position: absolute;
-    top: -.2rem;
-    right: -.2rem;
+    top: -5px;
+    right: -5px;
+    z-index: 1;
+}
+
+.grid-stack-item .editing {
+    border-radius: var(--border-radius);
+    box-shadow: 0 0 5px 3px var(--active-color);
+}
+
+.grid-stack-item:not(.ui-draggable-disabled) {
+    cursor: grab;
+}
+
+.grid-stack-item:not(.ui-draggable-disabled):hover .tk-btn {
+    background: var(--btn-hover-bg);
+}
+
+.welcome-message {
+    padding: 1rem;
+}
+
+.welcome-message__text {
+    display: inline-block;
+    margin-bottom: 10px;
 }

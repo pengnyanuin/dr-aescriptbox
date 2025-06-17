@@ -23,6 +23,7 @@ const DrAeScriptBox = {
         } else {
             // File not found, create default object
             DrAeScriptBox.CONFIG = {
+                "ver": "1.0",
                 "options": {
                     "columns": 4,
                     "cellWidth": null,
@@ -32,19 +33,17 @@ const DrAeScriptBox = {
             }
         }
 
-        const saveEditingButton = document.getElementsByClassName('js-save-editing')[0];
-        saveEditingButton.addEventListener('click', DrAeScriptBox.closeAllowEditing);
-        saveEditingButton.addEventListener('click', DrAeScriptBox.saveGridEditing);
-
         const configOpenButton = document.getElementsByClassName('js-open-config')[0];
         const configCloseButton = document.getElementsByClassName('js-close-config')[0];
         const configSaveButton = document.getElementsByClassName('js-save-config')[0];
-        const configDetailedSwitchButton = document.getElementsByClassName('js-allow-editing')[0];
+        const configDetailedOpenButton = document.getElementsByClassName('js-allow-editing')[0];
+        const configDetailedCloseButton = document.getElementsByClassName('js-close-editing')[0];
         configOpenButton.addEventListener('click', DrAeScriptBox.openConfig);
         configCloseButton.addEventListener('click', DrAeScriptBox.closeConfig);
         configSaveButton.addEventListener('click', DrAeScriptBox.closeConfig);
         configSaveButton.addEventListener('click', DrAeScriptBox.saveConfig);
-        configDetailedSwitchButton.addEventListener('click', DrAeScriptBox.switchAllowEditing);
+        configDetailedOpenButton.addEventListener('click', DrAeScriptBox.openAllowEditing);
+        configDetailedCloseButton.addEventListener('click', DrAeScriptBox.closeAllowEditing);
 
         DrAeScriptBox.extensionSetup()
         DrAeScriptBox.displayFeedback("Welcome!")
@@ -53,6 +52,7 @@ const DrAeScriptBox = {
     extensionSetup: async function() {
         try {
             const buttonWrap = document.getElementsByClassName('js-buttons-wrap')[0];
+            buttonWrap.classList.remove('empty');
             DrAeScriptBox.cleanGridStack();
 
             let workingScripts = [];
@@ -112,6 +112,33 @@ const DrAeScriptBox = {
                 contentWrapper.appendChild(button);
                 gridWrapper.appendChild(contentWrapper);
                 buttonWrap.appendChild(gridWrapper);
+            }
+
+            if (workingScripts.length < 1) {
+                buttonWrap.classList.add('empty');
+                const welcomeMessageWrapper = document.createElement('div');
+                const welcomeMessageButton = document.createElement('button');
+                const welcomeMessageButtonText = document.createElement('span');
+                const welcomeMessageButtonImage = document.createElement('img');
+                const welcomeMessageText = document.createElement('span');
+                welcomeMessageWrapper.classList.add('welcome-message');
+                welcomeMessageWrapper.classList.add('js-welcome-message');
+                welcomeMessageButton.classList.add('welcome-message__button');
+                welcomeMessageButton.classList.add('btn');
+                welcomeMessageButton.classList.add('btn--icon');
+                welcomeMessageButton.classList.add('js-open-config');
+                welcomeMessageText.classList.add('welcome-message__text');
+                welcomeMessageText.innerHTML = 'Welcome to the AE Script Box. To start open settings and select the buttons you want to display.';
+                welcomeMessageButtonImage.src = './icons/config.svg';
+                welcomeMessageButtonText.innerHTML = 'Open settings';
+
+                welcomeMessageButton.appendChild(welcomeMessageButtonImage);
+                welcomeMessageButton.appendChild(welcomeMessageButtonText);
+                welcomeMessageWrapper.appendChild(welcomeMessageText);
+                welcomeMessageWrapper.appendChild(welcomeMessageButton);
+                buttonWrap.appendChild(welcomeMessageWrapper);
+
+                welcomeMessageButton.addEventListener('click', DrAeScriptBox.openConfig);
             }
 
             DrAeScriptBox.initGridStack();
@@ -264,31 +291,24 @@ const DrAeScriptBox = {
         return true;
     },
 
-    switchAllowEditing: function () {
-        const configContent = document.getElementsByClassName('js-buttons-wrap')[0];
-
-        if (configContent.classList.contains('editing')) {
-            DrAeScriptBox.closeAllowEditing();
-        } else {
-            DrAeScriptBox.openAllowEditing();
-        }
-    },
-
     openAllowEditing: function() {
         const buttonWrap = document.getElementsByClassName('js-buttons-wrap')[0];
         const buttons = buttonWrap.querySelectorAll('.js-grid-btn');
         buttonWrap.classList.add('editing');
+        document.body.classList.add('editing');
 
         for (const button of buttons) {
-            const newDiv = document.createElement('div');
+            const newElement = document.createElement('input');
             const newEditNameButton = document.createElement('button');
             const editNameImg = document.createElement('img');
-            newDiv.innerHTML = button.innerHTML;
-            newDiv.className = button.className;
-            newDiv.id = button.id;
+            newElement.value = button.innerHTML;
+            newElement.className = button.className;
+            newElement.type = 'text';
+            newElement.id = button.id;
 
-            newDiv.classList.add('js-temporary');
-            newDiv.classList.add('grid-btn');
+            newElement.classList.add('js-temporary');
+            newElement.classList.add('grid-btn');
+            newElement.classList.add('disabled');
             button.classList.add('hidden');
             newEditNameButton.classList.add('ui-rename');
             newEditNameButton.classList.add('config-btn');
@@ -302,7 +322,7 @@ const DrAeScriptBox = {
             });
 
 
-            button.parentNode.appendChild(newDiv);
+            button.parentNode.appendChild(newElement);
             newEditNameButton.appendChild(editNameImg);
             button.parentNode.parentNode.appendChild(newEditNameButton);
         }
@@ -310,8 +330,10 @@ const DrAeScriptBox = {
         DrAeScriptBox.GRID_STACK_INSTANCE.setStatic(false);
         DrAeScriptBox.displayFeedback('Editing mode');
 
-        const saveButton = document.getElementsByClassName('js-save-editing')[0];
-        saveButton.classList.remove('hidden');
+        const exitButton = document.getElementsByClassName('js-close-editing')[0];
+        const editingButton = document.getElementsByClassName('js-allow-editing')[0];
+        exitButton.classList.remove('hidden');
+        editingButton.classList.add('hidden');
     },
 
     closeAllowEditing: function() {
@@ -330,12 +352,12 @@ const DrAeScriptBox = {
 
         DrAeScriptBox.GRID_STACK_INSTANCE.setStatic(true);
 
-        DrAeScriptBox.displayFeedback('Cancelled editing the grid');
-
-        // todo detect without saving? show unsaved changes?
-
-        const saveButton = document.getElementsByClassName('js-save-editing')[0];
-        saveButton.classList.add('hidden');
+        const closeButton = document.getElementsByClassName('js-close-editing')[0];
+        const editingButton = document.getElementsByClassName('js-allow-editing')[0];
+        closeButton.classList.add('hidden');
+        editingButton.classList.remove('hidden');
+        buttonWrap.classList.remove('editing');
+        document.body.classList.remove('editing');
     },
 
     saveGridEditing: function() {
@@ -389,19 +411,42 @@ const DrAeScriptBox = {
     },
 
     initGridStack: function () {
-        // todo allow grid width and height setting
+        const configContent = document.getElementsByClassName('js-buttons-wrap')[0];
+
+        let gridStackWidthStyle = 'auto';
+        if (DrAeScriptBox.CONFIG.options.cellWidth) {
+            const columns = parseInt(DrAeScriptBox.CONFIG.options.columns);
+            const cellWidth = parseInt(DrAeScriptBox.CONFIG.options.cellWidth);
+            let columnsWidth = cellWidth * columns;
+            columnsWidth = columnsWidth + (6 * columns);
+
+            gridStackWidthStyle = columnsWidth + 'px';
+        }
+        configContent.style.width = gridStackWidthStyle;
+
+        let gridStackHeight = 'auto';
+        if (DrAeScriptBox.CONFIG.options.cellHeight) {
+            const cellHeight = parseInt(DrAeScriptBox.CONFIG.options.cellHeight);
+
+            gridStackHeight = cellHeight + 6;
+        }
+
         const gridStackOptions = {
             alwaysShowResizeHandle: false,
             column: DrAeScriptBox.CONFIG.options.columns,
-            cellHeight: DrAeScriptBox.CONFIG.options.cellHeight ? DrAeScriptBox.CONFIG.options.cellHeight : 'auto',
-            margin: '.2rem',
+            cellHeight: gridStackHeight,
+            margin: '3px',
             staticGrid: true,
-            float: false, // todo allow floating option
+            float: false, // todo allow floating option?
             draggable: {
                 scroll: false,
             }
         };
         DrAeScriptBox.GRID_STACK_INSTANCE = GridStack.init(gridStackOptions);
+
+        DrAeScriptBox.GRID_STACK_INSTANCE.on('change', function(event, items) {
+            DrAeScriptBox.saveGridEditing();
+        });
     },
 
     cleanGridStack: function () {
@@ -417,29 +462,59 @@ const DrAeScriptBox = {
                 gridItem.parentNode.removeChild(gridItem);
             }
         }
+
+        const welcomeMessage = document.querySelector('.js-welcome-message');
+        if (welcomeMessage) {
+            welcomeMessage.parentNode.removeChild(welcomeMessage);
+        }
     },
 
     changeButtonName: function (gridItem) {
-        const button = gridItem.querySelector('.js-grid-btn:not(.js-temporary)');
+        const temporaryButton = gridItem.querySelector('.js-grid-btn.js-temporary');
+        gridItem.classList.add('editing-name');
+        temporaryButton.parentNode.classList.add('editing');
+        temporaryButton.classList.remove('disabled');
+        temporaryButton.disabled = false;
+        temporaryButton.focus();
 
-        csInterface.evalScript('prompt("Enter value:", "' + button.innerHTML + '")', function(userNewButtonName) {
-            if (!userNewButtonName) {
-                return;
-            }
+        temporaryButton.addEventListener('keydown', DrAeScriptBox.saveButtonNameOnEnterEvent);
+        temporaryButton.addEventListener('blur', DrAeScriptBox.saveButtonNames);
+
+        DrAeScriptBox.displayFeedback('Enter new button name...');
+    },
+
+    saveButtonNameOnEnterEvent: function (event) {
+        if (event.key === 'Enter') {
+            DrAeScriptBox.saveButtonNames();
+        }
+    },
+
+    saveButtonNames: function () {
+        const temporaryGridContentEditing = document.querySelectorAll('.js-buttons-wrap .grid-stack-item-content.editing');
+        temporaryGridContentEditing.forEach((temporaryContent) => {
+            const temporaryButton = temporaryContent.querySelector('.js-grid-btn.js-temporary');
+            const button = temporaryContent.querySelector('.js-grid-btn:not(.js-temporary)');
+            temporaryContent.parentElement.classList.remove('editing-name');
+            temporaryContent.classList.remove('editing');
+            temporaryButton.classList.add('disabled');
+            temporaryButton.disabled = true;
+            temporaryButton.blur();
+
+            temporaryButton.removeEventListener('keydown', DrAeScriptBox.saveButtonNameOnEnterEvent);
+            temporaryButton.removeEventListener('blur', DrAeScriptBox.saveButtonNames);
+
+            const userNewButtonName = temporaryButton.value;
+            button.innerHTML = userNewButtonName;
 
             let config = JSON.parse(JSON.stringify(DrAeScriptBox.CONFIG));
+            if (config.scripts[temporaryContent.parentElement.getAttribute('data-script-key')] !== undefined && config.scripts[temporaryContent.parentElement.getAttribute('data-script-key')].buttonName !== userNewButtonName) {
+                config.scripts[temporaryContent.parentElement.getAttribute('data-script-key')].buttonName = userNewButtonName;
 
-            if (config.scripts[gridItem.getAttribute('data-script-key')] !== undefined) {
-                config.scripts[gridItem.getAttribute('data-script-key')].buttonName = userNewButtonName;
+                DrAeScriptBox.saveConfigSettings(config);
+                DrAeScriptBox.displayFeedback('Button name changed!');
+            } else {
+                DrAeScriptBox.displayFeedback('Cancelled button name change');
             }
-
-            const temporaryButton = gridItem.querySelector('.js-grid-btn.js-temporary');
-            button.innerHTML = userNewButtonName;
-            temporaryButton.innerHTML = userNewButtonName;
-
-            // todo save here? what is save button for then? maybe dont save?
-            DrAeScriptBox.saveConfigSettings(config);
-            DrAeScriptBox.displayFeedback('Button name changed!');
         });
     }
 }
