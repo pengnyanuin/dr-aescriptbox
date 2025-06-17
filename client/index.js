@@ -151,6 +151,11 @@ const DrAeScriptBox = {
         const configContent = document.getElementsByClassName('js-config-content')[0];
         const configOptions = document.querySelectorAll('.js-config-option');
         const scriptsFilesResult = await DrAeScriptBox.evalScriptAsync('draesb_getScriptsFolderContent()');
+
+        if (scriptsFilesResult === '') {
+            return;
+        }
+
         const configScripts = DrAeScriptBox.CONFIG.scripts;
         const scriptsFiles = JSON.parse(scriptsFilesResult);
 

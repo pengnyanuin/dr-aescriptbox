@@ -2,9 +2,23 @@ function draesb_getScriptsFolder() {
     return Folder.appPackage.fsName + "/Scripts/";
 }
 
-function draesb_getScriptsFolderContent() {
-    var scriptsFolderPath = draesb_getScriptsFolder();
+// function draesb_getUserScriptsFolder() {
+//     var aeVersion = app.version.split(" ")[0]; // e.g. "24.3.0" => "24.3"
+//     var majorVersion = aeVersion.split(".")[0]; // e.g. "24"
+//     var userScriptsPath;
+//
+//     if ($.os.indexOf("Windows") !== -1) {
+//         userScriptsPath = Folder.userData.fsName + "/Adobe/After Effects/" + majorVersion + ".0/Scripts/";
+//     } else {
+//         // Does it work? Not tested
+//         var homeFolder = Folder("~");
+//         userScriptsPath = homeFolder.fsName + "/Library/Preferences/Adobe/After Effects/" + majorVersion + ".0/Scripts/";
+//     }
+//
+//     return userScriptsPath;
+// }
 
+function draesb_getScriptsFromFolderPath(scriptsFolderPath) {
     var folder = new Folder(scriptsFolderPath);
 
     if (!folder.exists) {
@@ -19,6 +33,19 @@ function draesb_getScriptsFolderContent() {
     }
 
     return JSON.stringify(fileNames);
+}
+
+function draesb_getScriptsFolderContent() {
+    var scriptsFolderPath = draesb_getScriptsFolder();
+
+    // todo include user script files
+    // todo include scripts within folders
+    // todo visually separate user from system scripts and make them collapsable; only if both present
+    // todo show subfolder path
+    // todo ignore startup, shutdown and () folders
+    // var scriptsUserFolderPath = draesb_getUserScriptsFolder();
+
+    return draesb_getScriptsFromFolderPath(scriptsFolderPath);
 }
 
 function draesb_checkIfFileExists(filePath) {
