@@ -37,6 +37,7 @@
 
 html {
     height: 100vh;
+    background: var(--main-bg);
 }
 
 body {
@@ -79,6 +80,10 @@ input {
 
 input:focus {
     background: var(--btn-hover-bg);
+}
+
+input[type="number"] {
+    position: relative;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -358,7 +363,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .grid-stack .grid-stack-item > .ui-resizable-se {
-    right: -5px;
+    right: -3px;
     bottom: -5px;
     transform: none;
     border-radius: var(--border-radius);
@@ -380,7 +385,7 @@ input[type="number"]::-webkit-outer-spin-button {
     height: 20px;
     position: absolute;
     top: -5px;
-    right: -5px;
+    right: -3px;
     z-index: 1;
 }
 

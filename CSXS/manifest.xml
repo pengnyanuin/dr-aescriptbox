@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<ExtensionManifest ExtensionBundleId="com.my.test" ExtensionBundleVersion="1.0.0" Version="7.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ExtensionManifest ExtensionBundleId="com.my.draescriptbox" ExtensionBundleVersion="1.0.0" Version="7.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <ExtensionList>
-        <Extension Id="com.my.test.panel" Version="1.0.0" />
+        <Extension Id="com.my.draescriptbox.panel" Version="1.0.0" />
     </ExtensionList>
     <ExecutionEnvironment>
         <HostList>
-            <Host Name="AEFT" Version="19" />
+            <Host Name="AEFT" Version="[22.0,99.9]" />
         </HostList>
         <LocaleList>
             <Locale Code="All" />
@@ -15,7 +15,7 @@
         </RequiredRuntimeList>
     </ExecutionEnvironment>
     <DispatchInfoList>
-        <Extension Id="com.my.test.panel">
+        <Extension Id="com.my.draescriptbox.panel">
             <DispatchInfo>
                 <Resources>
                     <MainPath>./client/index.html</MainPath>
@@ -34,7 +34,10 @@
                             <Width>350</Width>
                         </Size>
                     </Geometry>
-                    <Icons />
+                    <Icons>
+                        <Icon Type="Panel" Size="16">../resources/icons/icon16.png</Icon>
+                        <Icon Type="Panel" Size="32">../resources/icons/icon32.png</Icon>
+                    </Icons>
                 </UI>
             </DispatchInfo>
         </Extension>
