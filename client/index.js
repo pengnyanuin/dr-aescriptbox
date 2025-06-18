@@ -160,13 +160,18 @@ const DrAeScriptBox = {
         const scriptsFiles = JSON.parse(scriptsFilesResult);
 
         for (const script of scriptsFiles) {
+            let customName = '';
+            if (Object.hasOwn(configScripts, script)) {
+                customName = '(' + configScripts.buttonName + ') ';
+            }
+
             const label = document.createElement('label');
             const checkbox = document.createElement('input');
             const textWrap = document.createElement('span');
             const checkboxWrap = document.createElement('span');
             checkbox.type = 'checkbox';
             checkbox.name = script;
-            textWrap.innerText = decodeURIComponent(script);
+            textWrap.innerText = customName + decodeURIComponent(script);
             checkboxWrap.classList.add('checkbox-wrap');
             textWrap.classList.add('text-wrap');
 
