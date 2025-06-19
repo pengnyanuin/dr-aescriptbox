@@ -1,5 +1,4 @@
 (function () {
-
     // todo works for AE 2025, but what's the pref for older AEs?
     var recentFile = app.preferences.getPrefAsString("Most Recently Used (MRU) Search v2", "MRU Project Path ID # 0, File Path");
 
