@@ -18,33 +18,74 @@ function draesb_getUserScriptsFolder() {
 }
 
 function draesb_getScriptsFromFolderPath(scriptsFolderPath) {
-    var folder = new Folder(scriptsFolderPath);
+    var resultScripts = [];
 
-    if (!folder.exists) {
-        alert("Folder does not exist: " + scriptsFolderPath);
+    function shouldSkipFolder(folderName) {
+        if (
+            folderName === 'Startup' ||
+            folderName === 'Shutdown' ||
+            decodeURI(folderName) === 'ScriptUI Panels'
+        ) {
+            return true;
+        }
+
+        if (folderName.match(/^\(.*\)$/)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function scanFolder(folder, relativePath) {
+        if (!folder || !folder.exists) {
+            return;
+        }
+
+        if (!(folder instanceof Folder)) {
+            return;
+        }
+
+        if (shouldSkipFolder(folder.name)) {
+            return;
+        }
+
+        var filesAndFolders;
+        try {
+            filesAndFolders = folder.getFiles();
+        } catch (e) {
+            return;
+        }
+
+        for (var i = 0; i < filesAndFolders.length; i++) {
+            var checkedFile = filesAndFolders[i];
+            if (checkedFile instanceof Folder) {
+                var subRelativePath = relativePath + decodeURI(checkedFile.name) + '/';
+                scanFolder(checkedFile, subRelativePath);
+            } else if (checkedFile instanceof File) {
+                var lowerName = checkedFile.name.toLowerCase();
+                if (lowerName.match(/\.(jsx|jsxbin)$/)) {
+                    resultScripts.push({
+                        scriptName: relativePath + checkedFile.name,
+                        scriptPath: checkedFile.fsName
+                    });
+                }
+            }
+        }
+    }
+
+    var rootFolder = new Folder(scriptsFolderPath);
+    if (!rootFolder.exists) {
+        alert('Folder does not exist: ' + scriptsFolderPath);
         return '';
     }
 
-    var files = folder.getFiles("*.jsx");
-    var fileNames = [];
-    for (var i = 0; i < files.length; i++) {
-        fileNames.push({
-            scriptName: files[i].name,
-            scriptPath: files[i].fsName
-        });
-    }
-
-    return fileNames;
+    scanFolder(rootFolder, '');
+    return resultScripts;
 }
 
 function draesb_getAllScriptsContent() {
     var scriptsFolderPath = draesb_getScriptsFolder();
     var scriptsUserFolderPath = draesb_getUserScriptsFolder();
-
-    // todo include scripts within folders
-    // todo visually separate user from system scripts and make them collapsable; only if both present
-    // todo show subfolder path
-    // todo ignore startup, shutdown and () folders
 
     const systemScripts = draesb_getScriptsFromFolderPath(scriptsFolderPath);
     const userScripts = draesb_getScriptsFromFolderPath(scriptsUserFolderPath);

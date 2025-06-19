@@ -8,6 +8,7 @@ const DrAeScriptBox = {
     CONFIG_FILE_PATH: null,
     CONFIG_FILE_FOLDER_PATH: null,
     CONFIG: null,
+    CONFIG_SETUP_MISSING_SCRIPTS: {},
     GRID_STACK_INSTANCE: null,
 
     init: function () {
@@ -70,8 +71,6 @@ const DrAeScriptBox = {
                         scriptKey: scriptKey,
                         data: script
                     })
-                } else {
-                    // todo file doesnt exist
                 }
             }
 
@@ -161,42 +160,137 @@ const DrAeScriptBox = {
         const systemScripts = scriptsFiles.systemScripts;
         const userScripts = scriptsFiles.userScripts;
 
+        DrAeScriptBox.CONFIG_SETUP_MISSING_SCRIPTS = JSON.parse(JSON.stringify(DrAeScriptBox.CONFIG.scripts));
         const newSystemScriptElements = DrAeScriptBox.configSetupBuildScriptElements(systemScripts);
         const newUserScriptElements = DrAeScriptBox.configSetupBuildScriptElements(userScripts);
 
-        const systemScriptsWrap = document.createElement('div');
-        const systemUsersWrap = document.createElement('div');
-        const systemScriptsTitle = document.createElement('div');
-        const systemUsersTitle = document.createElement('div');
-        systemScriptsWrap.classList.add('js-config-section-wrap');
-        systemScriptsWrap.classList.add('config__content__section__part');
-        systemUsersWrap.classList.add('js-config-section-wrap');
-        systemUsersWrap.classList.add('config__content__section__part');
-        systemScriptsTitle.classList.add('config__content__section__part__title');
-        systemUsersTitle.classList.add('config__content__section__part__title');
-        systemScriptsWrap.setAttribute('data-config-section', 'system-scripts');
-        systemUsersWrap.setAttribute('data-config-section', 'users-scripts');
-        systemScriptsTitle.innerHTML = 'System scripts';
-        systemUsersTitle.innerHTML = 'User scripts';
+        let sectionCounter = 0;
+        let systemScriptsWrap, systemScriptsTitle, userScriptsWrap, usersScriptsTitle;
 
-        for (const newSystemScript of newSystemScriptElements) {
-            systemScriptsWrap.appendChild(newSystemScript);
+        if (newSystemScriptElements.length > 0) {
+            systemScriptsWrap = document.createElement('div');
+            systemScriptsTitle = document.createElement('button');
+            systemScriptsTitle.classList.add('js-config-system-section-title');
+            systemScriptsWrap.classList.add('config__content__section__part');
+            systemScriptsTitle.classList.add('config__content__section__part__title');
+            systemScriptsTitle.innerHTML = 'System scripts';
+
+            for (const newSystemScript of newSystemScriptElements) {
+                systemScriptsWrap.appendChild(newSystemScript);
+            }
+
+            systemScriptsTitle.addEventListener('click', () => {
+                if (systemScriptsTitle.classList.contains('collapsed')) {
+                    systemScriptsTitle.classList.remove('collapsed');
+                    systemScriptsWrap.classList.remove('hidden');
+                } else {
+                    systemScriptsTitle.classList.add('collapsed');
+                    systemScriptsWrap.classList.add('hidden');
+                }
+
+                DrAeScriptBox.saveConfigCollapsibleOptions();
+            })
+
+            sectionCounter++;
         }
 
-        for (const newUserScript of newUserScriptElements) {
-            systemUsersWrap.appendChild(newUserScript);
+        if (newUserScriptElements.length > 0) {
+            userScriptsWrap = document.createElement('div');
+            usersScriptsTitle = document.createElement('button');
+            usersScriptsTitle.classList.add('js-config-user-section-title');
+            userScriptsWrap.classList.add('config__content__section__part');
+            usersScriptsTitle.classList.add('config__content__section__part__title');
+            usersScriptsTitle.innerHTML = 'User scripts';
+
+            for (const newUserScript of newUserScriptElements) {
+                userScriptsWrap.appendChild(newUserScript);
+            }
+
+            usersScriptsTitle.addEventListener('click', () => {
+                if (usersScriptsTitle.classList.contains('collapsed')) {
+                    usersScriptsTitle.classList.remove('collapsed');
+                    userScriptsWrap.classList.remove('hidden');
+                } else {
+                    usersScriptsTitle.classList.add('collapsed');
+                    userScriptsWrap.classList.add('hidden');
+                }
+
+                DrAeScriptBox.saveConfigCollapsibleOptions();
+            })
+
+            sectionCounter++;
         }
 
-        configContent.appendChild(systemScriptsTitle);
-        configContent.appendChild(systemScriptsWrap);
-        configContent.appendChild(systemUsersTitle);
-        configContent.appendChild(systemUsersWrap);
+        if (sectionCounter > 1) {
+            if (systemScriptsTitle) {
+                configContent.appendChild(systemScriptsTitle);
+            }
+
+            systemScriptsWrap.classList.add('sectioned')
+
+            if (DrAeScriptBox.CONFIG.options.systemScriptsCollapsed) {
+                systemScriptsTitle.classList.add('collapsed');
+                systemScriptsWrap.classList.add('hidden');
+            }
+        }
+
+        if (systemScriptsWrap) {
+            configContent.appendChild(systemScriptsWrap);
+        }
+
+        if (sectionCounter > 1) {
+            if (usersScriptsTitle) {
+                configContent.appendChild(usersScriptsTitle);
+            }
+
+            userScriptsWrap.classList.add('sectioned')
+
+            if (DrAeScriptBox.CONFIG.options.userScriptsCollapsed) {
+                usersScriptsTitle.classList.add('collapsed');
+                userScriptsWrap.classList.add('hidden');
+            }
+        }
+
+        if (userScriptsWrap) {
+            configContent.appendChild(userScriptsWrap);
+        }
 
         for (const option of configOptions) {
             option.value = DrAeScriptBox.CONFIG.options[option.name]
         }
 
-        // todo display saved but not found scripts and allow deleting them from config.json
+        // Missing scripts
+        if (Object.keys(DrAeScriptBox.CONFIG_SETUP_MISSING_SCRIPTS).length !== 0) {
+            for(const missingScriptKey in DrAeScriptBox.CONFIG_SETUP_MISSING_SCRIPTS) {
+                const missingScriptPath = DrAeScriptBox.CONFIG_SETUP_MISSING_SCRIPTS[missingScriptKey].path;
+
+                const missingScriptWrap = document.createElement('div');
+                const missingScriptButton = document.createElement('button');
+                const missingScriptText = document.createElement('span');
+                const missingScriptButtonIcon = document.createElement('img');
+
+                missingScriptButtonIcon.src = './icons/minus.svg';
+                missingScriptButtonIcon.alt = 'Remove'
+                missingScriptWrap.classList.add('label');
+                missingScriptWrap.classList.add('missing-script');
+                missingScriptWrap.classList.add('js-missing-script');
+                missingScriptText.classList.add('text-wrap');
+                missingScriptButton.classList.add('config-btn');
+                missingScriptText.innerHTML = missingScriptPath;
+                missingScriptButton.title = 'Remove script';
+                missingScriptWrap.setAttribute('data-script-name', missingScriptKey);
+
+                missingScriptButton.addEventListener('click', () => {
+                    missingScriptWrap.remove();
+                });
+
+                missingScriptButton.appendChild(missingScriptButtonIcon);
+                missingScriptWrap.appendChild(missingScriptButton);
+                missingScriptWrap.appendChild(missingScriptText);
+
+                configContent.appendChild(missingScriptWrap);
+            }
+        }
     },
 
     configSetupBuildScriptElements: function (scripts) {
@@ -209,9 +303,9 @@ const DrAeScriptBox = {
                 customNameWrapper = document.createElement('span');
                 customNameWrapper.classList.add('config__content__custom-name')
                 if (configScripts[script.scriptName].buttonName === '') {
-                    customNameWrapper.innerHTML = '(empty) ';
+                    customNameWrapper.innerHTML = ' (empty)';
                 } else {
-                    customNameWrapper.innerHTML = '(' + configScripts[script.scriptName].buttonName + ') ';
+                    customNameWrapper.innerHTML = ' (' + configScripts[script.scriptName].buttonName + ')';
                 }
             }
 
@@ -219,24 +313,26 @@ const DrAeScriptBox = {
             const checkbox = document.createElement('input');
             const textWrap = document.createElement('span');
             const checkboxWrap = document.createElement('span');
-            const scriptNameWrap = document.createElement('span');
             checkbox.type = 'checkbox';
             checkbox.name = script.scriptName;
             checkbox.setAttribute('data-script-path', script.scriptPath);
-            scriptNameWrap.innerHTML = decodeURIComponent(script.scriptName);
             checkboxWrap.classList.add('checkbox-wrap');
             textWrap.classList.add('text-wrap');
 
+            const scriptNameWrap = DrAeScriptBox.getSplitScriptName(script.scriptName);
+
+            textWrap.appendChild(scriptNameWrap);
             if (customNameWrapper) {
                 textWrap.appendChild(customNameWrapper);
             }
-            textWrap.appendChild(scriptNameWrap);
             label.appendChild(checkboxWrap);
             label.appendChild(textWrap);
             checkboxWrap.appendChild(checkbox);
 
-            if (Object.values(configScripts).some(s => s.name === script.scriptName) || Object.values(configScripts).some( s => s.name === decodeURIComponent(script.scriptName))) {
+            if (Object.values(configScripts).some(s => s.name === script.scriptName) || Object.values(configScripts).some(s => s.name === decodeURIComponent(script.scriptName))) {
                 checkbox.checked = true;
+
+                delete DrAeScriptBox.CONFIG_SETUP_MISSING_SCRIPTS[script.scriptName];
             }
 
             newScriptElements.push(label);
@@ -307,6 +403,16 @@ const DrAeScriptBox = {
             }
         }
 
+        // Save missing scripts
+        const missingScriptsList = configContent.querySelectorAll('.js-missing-script');
+        missingScriptsList.forEach(missingScript => {
+            const missingScriptName = missingScript.getAttribute('data-script-name');
+
+            if (DrAeScriptBox.CONFIG.scripts[missingScriptName]) {
+                config.scripts[missingScriptName] = DrAeScriptBox.CONFIG.scripts[missingScriptName];
+            }
+        })
+
         for (const option of configOptions) {
             let newValue = option.value;
 
@@ -339,7 +445,18 @@ const DrAeScriptBox = {
         DrAeScriptBox.displayFeedback("Config saved!")
     },
 
-    saveConfigSettings(config) {
+    saveConfigCollapsibleOptions: function () {
+        let config = JSON.parse(JSON.stringify(DrAeScriptBox.CONFIG));
+        const configContent = document.getElementsByClassName('js-config-content')[0];
+        const systemScriptsSectionTitle = configContent.querySelector('.js-config-system-section-title');
+        const userScriptsSectionTitle = configContent.querySelector('.js-config-user-section-title');
+        config.options.systemScriptsCollapsed = systemScriptsSectionTitle && systemScriptsSectionTitle.classList.contains('collapsed');
+        config.options.userScriptsCollapsed = userScriptsSectionTitle && userScriptsSectionTitle.classList.contains('collapsed');
+
+        DrAeScriptBox.saveConfigSettings(config);
+    },
+
+    saveConfigSettings: function(config) {
         if (!DrAeScriptBox.ensureFolder(DrAeScriptBox.CONFIG_FILE_FOLDER_PATH)) {
             alert("Could not create config folder.");
             return false;
@@ -584,7 +701,40 @@ const DrAeScriptBox = {
     },
 
     getDefaultButtonNameFromScriptName: function (scriptName) {
-        return decodeURIComponent(scriptName).replace(/\.jsx$/, '');
+        const decodedScriptName = decodeURIComponent(scriptName).replace(/\.jsx(bin)?$/i, '');
+
+        const slashIndex = decodedScriptName.lastIndexOf('/');
+        if (slashIndex === -1) {
+            return decodedScriptName;
+        }
+
+        return decodedScriptName.substring(slashIndex + 1);
+    },
+
+    getSplitScriptName: function (scriptName) {
+        const lastSlashIndex = scriptName.lastIndexOf('/');
+        let scriptNamePart, scriptPathPart;
+        if (lastSlashIndex === -1) {
+            scriptNamePart = scriptName;
+        } else {
+            scriptPathPart = scriptName.substring(0, lastSlashIndex + 1);
+            scriptNamePart = scriptName.substring(lastSlashIndex + 1);
+        }
+
+        const scriptNameWrap = document.createElement('span');
+        const scriptNameNamePart = document.createElement('span');
+        scriptNameNamePart.innerHTML = decodeURIComponent(scriptNamePart);
+        if (scriptPathPart) {
+            const scriptNamePathPart = document.createElement('span');
+            scriptNamePathPart.classList.add('text-faded');
+            scriptNamePathPart.innerHTML = decodeURIComponent(scriptPathPart);
+
+            scriptNameWrap.appendChild(scriptNamePathPart);
+        }
+
+        scriptNameWrap.appendChild(scriptNameNamePart);
+
+        return scriptNameWrap;
     }
 }
 
