@@ -23,7 +23,7 @@ const DrAeScriptBox = {
         } else {
             // File not found, create default object
             DrAeScriptBox.CONFIG = {
-                "ver": "1.0.0",
+                "ver": "1.1.0",
                 "options": {
                     "columns": 2,
                     "cellWidth": null,
@@ -436,6 +436,9 @@ const DrAeScriptBox = {
             config.options[option.name] = newValue;
             option.value = newValue;
         }
+
+        // apply current version
+        config.ver = '1.1.0';
 
         if (!DrAeScriptBox.saveConfigSettings(config)) {
             return;
