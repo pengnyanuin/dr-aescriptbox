@@ -5,7 +5,7 @@
     if (recentFile) {
         var recentProject = new File(recentFile);
 
-        app.project.close(CloseOptions.DO_NOT_SAVE_CHANGES);
+        app.project.close(CloseOptions.PROMPT_TO_SAVE_CHANGES);
         app.open(recentProject);
 
     } else {
