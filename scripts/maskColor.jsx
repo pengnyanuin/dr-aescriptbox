@@ -1,26 +1,50 @@
-var customColor = [1, 0, 0]; // Bright Red
+var activeItem = app.project.activeItem;
 
-app.beginUndoGroup("Change Mask Colors");
+if (activeItem && activeItem instanceof CompItem && activeItem.selectedLayers.length > 0) {
+    app.beginUndoGroup("Change Mask Color");
 
-var comp = app.project.activeItem;
-
-if (comp && comp instanceof CompItem && comp.selectedLayers.length > 0) {
-    for (var i = 0; i < comp.selectedLayers.length; i++) {
-        var layer = comp.selectedLayers[i];
+    for (var i = 0; i < activeItem.selectedLayers.length; i++) {
+        var layer = activeItem.selectedLayers[i];
         var masks = layer.property("Masks");
-        var color = masks.property(1).color;
 
-        colorHsv = rgbToHsv(color);
-        colorHsv = [colorHsv[0], 1, 1];
-        colorRgb = hsvToRgb(colorHsv);
+        if (masks && masks.numProperties > 0) {
+            var maskIndicesToChange = [];
 
-        masks.property(1).color = colorRgb;
+            // Find selected masks
+            for (var j = 1; j <= masks.numProperties; j++) {
+                var mask = masks.property(j);
+                if (mask.selected) {
+                    maskIndicesToChange.push(j);
+                }
+            }
+
+            if (maskIndicesToChange.length > 0) {
+                for (var k = 0; k < maskIndicesToChange.length; k++) {
+                    var idx = maskIndicesToChange[k];
+                    var color = masks.property(idx).color;
+
+                    colorHsv = rgbToHsv(color);
+                    colorHsv = [colorHsv[0], 1, 1];
+                    colorRgb = hsvToRgb(colorHsv);
+
+                    masks.property(idx).color = colorRgb;
+                }
+            } else {
+                for (var j = 1; j <= masks.numProperties; j++) {
+                    var color = masks.property(j).color;
+
+                    colorHsv = rgbToHsv(color);
+                    colorHsv = [colorHsv[0], 1, 1];
+                    colorRgb = hsvToRgb(colorHsv);
+
+                    masks.property(j).color = colorRgb;
+                }
+            }
+        }
     }
-} else {
-    alert("Please select at least one layer with masks.");
-}
 
-app.endUndoGroup();
+    app.endUndoGroup();
+}
 
 function rgbToHsv(rgb) {
     var r = rgb[0];
