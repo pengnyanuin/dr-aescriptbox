@@ -1,11 +1,16 @@
 :root {
     --btn-bg: #333333;
     --btn-hover-bg: #555555;
-    --active-color: #4096f3;
-    --active-hover-color: #70b0f6;
-    --editing-color: #f6e270;
+    /*--active-color: #4096f3;*/
+    /*--active-hover-color: #70b0f6;*/
+    --active-color: #546cab;
+    --active-hover-color: #7689BC;
+    --editing-color: #888888;
     --main-bg: #1e1e1e;
     --border-radius: .3rem;
+    --faded-text: #aaaaaa;
+    --text-color: #d0d0d0;
+    --button-color: #f5f5f5;
 }
 
 ::-webkit-scrollbar {
@@ -27,12 +32,12 @@
     background: var(--btn-hover-bg);
 }
 
-.hidden {
-    display: none !important;
-}
-
 * {
     box-sizing: border-box;
+}
+
+.hidden {
+    display: none !important;
 }
 
 html {
@@ -41,7 +46,7 @@ html {
 }
 
 body {
-    color: #ffffff;
+    color: var(--text-color);
     font-family: "Adobe Clean", "Myriad Pro", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     overflow: hidden;
     font-size: 12px;
@@ -74,16 +79,20 @@ input {
     margin: 0;
     outline: none;
     font: inherit;
-    color: #ffffff;
+    color: var(--text-color);
     line-height: 1;
 }
 
 input:focus {
     background: var(--btn-hover-bg);
+    color: var(--button-color);
 }
 
 input[type="number"] {
     position: relative;
+    width: 100%;
+    min-width: 0;
+    appearance: textfield;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -100,6 +109,7 @@ input[type="number"]::-webkit-outer-spin-button {
     width: auto;
     height: 22px;
     white-space: nowrap;
+    color: var(--button-color);
 }
 
 .btn:hover {
@@ -243,7 +253,21 @@ input[type="number"]::-webkit-outer-spin-button {
 .config__content__section {
     display: flex;
     flex-direction: column;
-    margin-right: .3rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.config__content__section__part {
+    padding-left: 3px;
+}
+
+.config__content__section__part__title {
+    margin-bottom: 3px;
+    color: var(--faded-text);
+}
+
+.config__content__section__part__title:not(:first-child) {
+    margin-top: 5px;
 }
 
 .config__content__section--paddings {
@@ -279,6 +303,11 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .config__content__option__input-wrapper input[type=number] {
     max-width: 100%;
+}
+
+.config__content__custom-name {
+    color: var(--faded-text);
+    font-style: italic;
 }
 
 .config .checkbox-wrap {
@@ -318,7 +347,8 @@ input[type="number"]::-webkit-outer-spin-button {
     left: 1px;
     height: 10px;
     width: 10px;
-    background-color: #ffffff;
+    background-color: #d0d0d0;
+    background-color: var(--text-color);
     border-radius: 50%;
 }
 

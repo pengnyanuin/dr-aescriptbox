@@ -5,7 +5,6 @@ window.onload = () => {
 };
 
 const DrAeScriptBox = {
-    CONFIG_LOADED: false,
     CONFIG_FILE_PATH: null,
     CONFIG_FILE_FOLDER_PATH: null,
     CONFIG: null,
@@ -56,23 +55,23 @@ const DrAeScriptBox = {
             DrAeScriptBox.cleanGridStack();
 
             let workingScripts = [];
-            const scriptsFolder = await DrAeScriptBox.evalScriptAsync('draesb_getScriptsFolder()');
             const configScripts = DrAeScriptBox.CONFIG.scripts;
 
             for (const scriptKey in configScripts) {
                 const script = configScripts[scriptKey];
-                const scriptPath = scriptsFolder + script.name;
-                const fileExistsResult = await DrAeScriptBox.evalScriptAsync('draesb_checkIfFileExists("' + DrAeScriptBox.escapeString(scriptPath) + '")');
+                const fileExistsResult = await DrAeScriptBox.evalScriptAsync('draesb_checkIfFileExists("' + DrAeScriptBox.escapeString(script.path) + '")');
                 const fileExists = fileExistsResult === '1';
 
                 if (fileExists) {
                     workingScripts.push({
-                        scriptPath: DrAeScriptBox.escapeString(scriptPath),
+                        scriptPath: DrAeScriptBox.escapeString(script.path),
                         buttonName: script.buttonName,
                         scriptName: script.name,
                         scriptKey: scriptKey,
                         data: script
                     })
+                } else {
+                    // todo file doesnt exist
                 }
             }
 
@@ -150,44 +149,100 @@ const DrAeScriptBox = {
     configSetup: async function () {
         const configContent = document.getElementsByClassName('js-config-content')[0];
         const configOptions = document.querySelectorAll('.js-config-option');
-        const scriptsFilesResult = await DrAeScriptBox.evalScriptAsync('draesb_getScriptsFolderContent()');
+        const scriptsFilesResult = await DrAeScriptBox.evalScriptAsync('draesb_getAllScriptsContent()');
 
         if (scriptsFilesResult === '') {
             return;
         }
 
-        const configScripts = DrAeScriptBox.CONFIG.scripts;
-        const scriptsFiles = JSON.parse(scriptsFilesResult);
+        configContent.innerHTML = '';
 
-        for (const script of scriptsFiles) {
-            let customName = '';
-            if (Object.hasOwn(configScripts, script)) {
-                customName = '(' + configScripts.buttonName + ') ';
+        const scriptsFiles = JSON.parse(scriptsFilesResult);
+        const systemScripts = scriptsFiles.systemScripts;
+        const userScripts = scriptsFiles.userScripts;
+
+        const newSystemScriptElements = DrAeScriptBox.configSetupBuildScriptElements(systemScripts);
+        const newUserScriptElements = DrAeScriptBox.configSetupBuildScriptElements(userScripts);
+
+        const systemScriptsWrap = document.createElement('div');
+        const systemUsersWrap = document.createElement('div');
+        const systemScriptsTitle = document.createElement('div');
+        const systemUsersTitle = document.createElement('div');
+        systemScriptsWrap.classList.add('js-config-section-wrap');
+        systemScriptsWrap.classList.add('config__content__section__part');
+        systemUsersWrap.classList.add('js-config-section-wrap');
+        systemUsersWrap.classList.add('config__content__section__part');
+        systemScriptsTitle.classList.add('config__content__section__part__title');
+        systemUsersTitle.classList.add('config__content__section__part__title');
+        systemScriptsWrap.setAttribute('data-config-section', 'system-scripts');
+        systemUsersWrap.setAttribute('data-config-section', 'users-scripts');
+        systemScriptsTitle.innerHTML = 'System scripts';
+        systemUsersTitle.innerHTML = 'User scripts';
+
+        for (const newSystemScript of newSystemScriptElements) {
+            systemScriptsWrap.appendChild(newSystemScript);
+        }
+
+        for (const newUserScript of newUserScriptElements) {
+            systemUsersWrap.appendChild(newUserScript);
+        }
+
+        configContent.appendChild(systemScriptsTitle);
+        configContent.appendChild(systemScriptsWrap);
+        configContent.appendChild(systemUsersTitle);
+        configContent.appendChild(systemUsersWrap);
+
+        for (const option of configOptions) {
+            option.value = DrAeScriptBox.CONFIG.options[option.name]
+        }
+
+        // todo display saved but not found scripts and allow deleting them from config.json
+    },
+
+    configSetupBuildScriptElements: function (scripts) {
+        const configScripts = DrAeScriptBox.CONFIG.scripts;
+        let newScriptElements = [];
+
+        for (const script of scripts) {
+            let customNameWrapper = null;
+            if (Object.hasOwn(configScripts, script.scriptName) && configScripts[script.scriptName].buttonName !== DrAeScriptBox.getDefaultButtonNameFromScriptName(script.scriptName)) {
+                customNameWrapper = document.createElement('span');
+                customNameWrapper.classList.add('config__content__custom-name')
+                if (configScripts[script.scriptName].buttonName === '') {
+                    customNameWrapper.innerHTML = '(empty) ';
+                } else {
+                    customNameWrapper.innerHTML = '(' + configScripts[script.scriptName].buttonName + ') ';
+                }
             }
 
             const label = document.createElement('label');
             const checkbox = document.createElement('input');
             const textWrap = document.createElement('span');
             const checkboxWrap = document.createElement('span');
+            const scriptNameWrap = document.createElement('span');
             checkbox.type = 'checkbox';
-            checkbox.name = script;
-            textWrap.innerText = customName + decodeURIComponent(script);
+            checkbox.name = script.scriptName;
+            checkbox.setAttribute('data-script-path', script.scriptPath);
+            scriptNameWrap.innerHTML = decodeURIComponent(script.scriptName);
             checkboxWrap.classList.add('checkbox-wrap');
             textWrap.classList.add('text-wrap');
 
-            configContent.appendChild(label);
+            if (customNameWrapper) {
+                textWrap.appendChild(customNameWrapper);
+            }
+            textWrap.appendChild(scriptNameWrap);
             label.appendChild(checkboxWrap);
             label.appendChild(textWrap);
             checkboxWrap.appendChild(checkbox);
 
-            if (Object.values(configScripts).some(s => s.name === script) || Object.values(configScripts).some( s => s.name === decodeURIComponent(script))) {
+            if (Object.values(configScripts).some(s => s.name === script.scriptName) || Object.values(configScripts).some( s => s.name === decodeURIComponent(script.scriptName))) {
                 checkbox.checked = true;
             }
+
+            newScriptElements.push(label);
         }
 
-        for (const option of configOptions) {
-            option.value = DrAeScriptBox.CONFIG.options[option.name]
-        }
+        return newScriptElements;
     },
 
     escapeString: function (string) {
@@ -209,11 +264,9 @@ const DrAeScriptBox = {
     openConfig: function() {
         const configWrap = document.getElementsByClassName('js-config')[0];
         configWrap.classList.add('open');
-        if (!DrAeScriptBox.CONFIG_LOADED) {
-            DrAeScriptBox.configSetup().then(() => {
-                DrAeScriptBox.CONFIG_LOADED = true;
-            });
-        }
+        DrAeScriptBox.configSetup().then(() => {
+            // After config loaded
+        });
     },
 
     closeConfig: function() {
@@ -236,7 +289,8 @@ const DrAeScriptBox = {
             if (config.scripts[selectedScript.name] === undefined) {
                 const selectedScriptData = {
                     name: decodeURIComponent(selectedScript.name),
-                    buttonName: decodeURIComponent(selectedScript.name).replace(/\.jsx$/, ''),
+                    buttonName: DrAeScriptBox.getDefaultButtonNameFromScriptName(selectedScript.name),
+                    path: decodeURIComponent(selectedScript.getAttribute('data-script-path')),
                     width: 1,
                     height: 1,
                     xPosition: null,
@@ -298,6 +352,7 @@ const DrAeScriptBox = {
         }
 
         DrAeScriptBox.CONFIG = config;
+
         return true;
     },
 
@@ -526,6 +581,10 @@ const DrAeScriptBox = {
                 DrAeScriptBox.displayFeedback('Cancelled button name change');
             }
         });
+    },
+
+    getDefaultButtonNameFromScriptName: function (scriptName) {
+        return decodeURIComponent(scriptName).replace(/\.jsx$/, '');
     }
 }
 
