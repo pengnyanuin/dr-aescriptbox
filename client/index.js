@@ -5,6 +5,7 @@ window.onload = () => {
 };
 
 const DrAeScriptBox = {
+    VERSION: '1.1.3',
     CONFIG_FILE_PATH: null,
     CONFIG_FILE_FOLDER_PATH: null,
     CONFIG: null,
@@ -23,7 +24,7 @@ const DrAeScriptBox = {
         } else {
             // File not found, create default object
             DrAeScriptBox.CONFIG = {
-                "ver": "1.1.0",
+                "ver": DrAeScriptBox.VERSION,
                 "options": {
                     "columns": 2,
                     "cellWidth": null,
@@ -438,7 +439,7 @@ const DrAeScriptBox = {
         }
 
         // apply current version
-        config.ver = '1.1.0';
+        config.ver = DrAeScriptBox.VERSION;
 
         if (!DrAeScriptBox.saveConfigSettings(config)) {
             return;
