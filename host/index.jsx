@@ -1,22 +1,22 @@
 function draesb_getScriptsFolder() {
-    return Folder.appPackage.fsName + "/Scripts/";
+    return Folder.appPackage.fsName + '/Scripts/';
 }
 
 function draesb_getUserScriptsFolder() {
-    var aeVersion = app.version.split(" ")[0];
-    if (aeVersion.indexOf("x") !== -1) {
-        aeVersion = aeVersion.split("x")[0];
+    var aeVersion = app.version.split(' ')[0];
+    if (aeVersion.indexOf('x') !== -1) {
+        aeVersion = aeVersion.split('x')[0];
     }
-    var versionParts = aeVersion.split(".");
-    var majorMinorVersion = versionParts[0] + "." + versionParts[1];
+    var versionParts = aeVersion.split('.');
+    var majorMinorVersion = versionParts[0] + '.' + versionParts[1];
 
     var userScriptsPath;
 
-    if ($.os.indexOf("Windows") !== -1) {
-        userScriptsPath = Folder.userData.fsName + "/Adobe/After Effects/" + majorMinorVersion + "/Scripts/";
+    if ($.os.indexOf('Windows') !== -1) {
+        userScriptsPath = Folder.userData.fsName + '/Adobe/After Effects/' + majorMinorVersion + '/Scripts/';
     } else {
-        var homeFolder = Folder("~");
-        userScriptsPath = homeFolder.fsName + "/Library/Preferences/Adobe/After Effects/" + majorVersion + ".0/Scripts/";
+        var homeFolder = Folder('~');
+        userScriptsPath = homeFolder.fsName + '/Library/Preferences/Adobe/After Effects/' + majorMinorVersion + '/Scripts/';
     }
 
     return userScriptsPath;
