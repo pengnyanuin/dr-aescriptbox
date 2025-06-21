@@ -1,4 +1,11 @@
 (function () {
+    /**
+     * Adjust mask color to be full saturation and brightness
+     *
+     * Specify specificColor for a specific color to be applied instead of adjusting the randomly selected one
+     */
+    var specificColor = false; // false || [0, 0, 0] - [1, 1, 1]
+
     var activeItem = app.project.activeItem;
 
     if (activeItem && activeItem instanceof CompItem && activeItem.selectedLayers.length > 0) {
@@ -22,21 +29,29 @@
                 if (maskIndicesToChange.length > 0) {
                     for (var k = 0; k < maskIndicesToChange.length; k++) {
                         var idx = maskIndicesToChange[k];
-                        var color = masks.property(idx).color;
 
-                        colorHsv = rgbToHsv(color);
-                        colorHsv = [colorHsv[0], 1, 1];
-                        colorRgb = hsvToRgb(colorHsv);
+                        if (specificColor) {
+                            var colorRgb = specificColor;
+                        } else {
+                            var color = masks.property(idx).color;
+                            var colorHsv = rgbToHsv(color);
+                            colorHsv = [colorHsv[0], 1, 1];
+                            var colorRgb = hsvToRgb(colorHsv);
+                        }
 
                         masks.property(idx).color = colorRgb;
                     }
                 } else {
                     for (var j = 1; j <= masks.numProperties; j++) {
-                        var color = masks.property(j).color;
+                        if (specificColor) {
+                            var colorRgb = specificColor;
+                        } else {
+                            var color = masks.property(j).color;
+                            var colorHsv = rgbToHsv(color);
+                            colorHsv = [colorHsv[0], 1, 1];
+                            var colorRgb = hsvToRgb(colorHsv);
 
-                        colorHsv = rgbToHsv(color);
-                        colorHsv = [colorHsv[0], 1, 1];
-                        colorRgb = hsvToRgb(colorHsv);
+                        }
 
                         masks.property(j).color = colorRgb;
                     }
