@@ -1,6 +1,7 @@
 (function () {
     /**
-     * Adjust mask color to be full saturation and brightness
+     * Adjust mask color on selected masks to be full saturation and brightness. If layer is selected, it is applied
+     * to all masks on that layer.
      *
      * Specify specificColor for a specific color to be applied instead of adjusting the randomly selected one
      */
@@ -9,7 +10,7 @@
     var activeItem = app.project.activeItem;
 
     if (activeItem && activeItem instanceof CompItem && activeItem.selectedLayers.length > 0) {
-        app.beginUndoGroup('Change Mask Color');
+        app.beginUndoGroup('Change mask color');
 
         for (var i = 0; i < activeItem.selectedLayers.length; i++) {
             var layer = activeItem.selectedLayers[i];
