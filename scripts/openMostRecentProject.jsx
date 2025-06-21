@@ -2,6 +2,8 @@
     /**
      * Open last opened project file
      *
+     * Version: 1.0.0
+     *
      * These values are tested and work for Adobe AE 25.x
      * If it doesn't work for you, you can figure out your versions
      * * by navigating to %appdata%\Adobe\After Effects\[YOUR_AE_VERSION]\

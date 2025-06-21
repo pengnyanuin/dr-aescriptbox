@@ -3,6 +3,8 @@
      * Adjust mask color on selected masks to be full saturation and brightness. If layer is selected, it is applied
      * to all masks on that layer.
      *
+     * Version: 1.0.0
+     *
      * Specify specificColor for a specific color to be applied instead of adjusting the randomly selected one
      */
     var specificColor = false; // false || [0, 0, 0] - [1, 1, 1]

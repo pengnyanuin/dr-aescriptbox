@@ -2,6 +2,8 @@
     /**
      * Pre-compose each selected layer individually
      *
+     * Version: 1.0.0
+     *
      * moveAllAttributesIntoTheNewComposition TRUE if all attributes to new layer
      * adjustCompositionDuration TRUE if pre-comp should adjust to pre-comped layer
      */

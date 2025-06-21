@@ -2,6 +2,8 @@
     /**
      * Set mask feather on all selected masks. If layer is selected, it is applied to all masks on that layer.
      *
+     * Version: 1.0.0
+     *
      * Specify specificColor for a specific color to be applied instead of adjusting the randomly selected one
      */
     var specificMaskFeather = 0.3; // number || [number, number]
