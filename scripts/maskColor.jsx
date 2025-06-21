@@ -9,11 +9,11 @@
     var activeItem = app.project.activeItem;
 
     if (activeItem && activeItem instanceof CompItem && activeItem.selectedLayers.length > 0) {
-        app.beginUndoGroup("Change Mask Color");
+        app.beginUndoGroup('Change Mask Color');
 
         for (var i = 0; i < activeItem.selectedLayers.length; i++) {
             var layer = activeItem.selectedLayers[i];
-            var masks = layer.property("Masks");
+            var masks = layer.property('Masks');
 
             if (masks && masks.numProperties > 0) {
                 var maskIndicesToChange = [];

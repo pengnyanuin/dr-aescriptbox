@@ -21,6 +21,6 @@
         app.open(recentProject);
 
     } else {
-        alert("No recent project files found in preferences.");
+        alert('No recent project files found in preferences.');
     }
 })();
