@@ -7,8 +7,8 @@
      * moveAllAttributesIntoTheNewComposition TRUE if all attributes to new layer
      * adjustCompositionDuration TRUE if pre-comp should adjust to pre-comped layer
      */
-    var moveAllAttributesIntoTheNewComposition = true;
-    var adjustCompositionDuration = true; // only works if moveAllAttributesIntoTheNewComposition is also true
+    var moveAllAttributesIntoTheNewComposition = true; // true || false
+    var adjustCompositionDuration = true; // true || false; only works if moveAllAttributesIntoTheNewComposition is also true
 
     var comp = app.project.activeItem;
     if (!(comp instanceof CompItem)) {

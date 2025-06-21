@@ -1,6 +1,6 @@
 (function () {
     /**
-     * Set mask feather on all selected masks. If layer is selected, it is applied to all masks on that layer.
+     * Set mask feather on all selected masks. If layers are selected, it is applied to all masks on those layers.
      *
      * Version: 1.0.0
      *
