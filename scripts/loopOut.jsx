@@ -41,5 +41,5 @@
 
     app.endUndoGroup();
 
-    app.activeViewer.setActive(); // todo focus on timeline?
+    app.activeViewer.setActive();
 })();

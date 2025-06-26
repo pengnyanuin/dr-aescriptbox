@@ -45,6 +45,8 @@
         }
 
         app.endUndoGroup();
+
+        app.activeViewer.setActive();
     }
 
     function isPositiveNumber(value) {

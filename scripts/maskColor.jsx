@@ -63,6 +63,8 @@
         }
 
         app.endUndoGroup();
+
+        app.activeViewer.setActive();
     }
 
     function rgbToHsv(rgb) {

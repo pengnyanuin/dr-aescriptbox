@@ -49,6 +49,8 @@
         }
 
         app.endUndoGroup();
+
+        app.activeViewer.setActive();
     }
 
     function findCompWithName(compName) {
