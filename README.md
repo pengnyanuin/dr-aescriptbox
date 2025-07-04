@@ -15,6 +15,9 @@ This extension allows you to have a dockable panel with buttons to run those scr
 - Settings are saved locally
 - Uses Gridstack.js to customize the layout of the buttons
 
+![scriptbox_preview_2](https://github.com/user-attachments/assets/514ef676-c0c0-44a1-bea7-0561828a846a)
+![scriptbox_preview_1](https://github.com/user-attachments/assets/7255a811-0641-4921-8750-30764f0e84fb)
+
 ### Jsx scripts
 
 The repository includes the scripts I wrote for myself to simplify my own workflow. You can download and install them as well, but I recommend looking around for scripts that will actually help you.
