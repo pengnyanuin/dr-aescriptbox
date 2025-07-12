@@ -476,3 +476,30 @@ input[type="number"]::-webkit-outer-spin-button {
     display: inline-block;
     margin-bottom: 10px;
 }
+
+.grid-colors-wrap {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 15px;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    left: -5px;
+    margin: auto;
+    z-index: 1;
+}
+
+.color-btn {
+    width: 15px;
+    height: 15px;
+}
+
+.color-btn:hover {
+    filter: brightness(80%);
+}
+
+.grid-stack-item.editing-name .grid-colors-wrap {
+    display: flex;
+}

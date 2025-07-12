@@ -11,26 +11,40 @@ const DrAeScriptBox = {
     CONFIG: null,
     CONFIG_SETUP_MISSING_SCRIPTS: {},
     GRID_STACK_INSTANCE: null,
+    GRID_BTN_COLORS: {
+        red: {
+            color: '#ff0000',
+            title: 'Red',
+        },
+        green: {
+            color: '#00ff00',
+            title: 'Green',
+        },
+        blue: {
+            color: '#0000ff',
+            title: 'Blue',
+        }
+    },
 
     init: function () {
         // Get config data
         let config = null;
         const userDataPath = csInterface.getSystemPath(SystemPath.USER_DATA);
-        DrAeScriptBox.CONFIG_FILE_FOLDER_PATH = userDataPath + "/DrAeScriptBox";
-        DrAeScriptBox.CONFIG_FILE_PATH = DrAeScriptBox.CONFIG_FILE_FOLDER_PATH + "/config.json";
+        DrAeScriptBox.CONFIG_FILE_FOLDER_PATH = userDataPath + '/DrAeScriptBox';
+        DrAeScriptBox.CONFIG_FILE_PATH = DrAeScriptBox.CONFIG_FILE_FOLDER_PATH + '/config.json';
         const readConfigFileResult = window.cep.fs.readFile(DrAeScriptBox.CONFIG_FILE_PATH);
         if (readConfigFileResult.err === 0) {
             DrAeScriptBox.CONFIG = JSON.parse(readConfigFileResult.data);
         } else {
             // File not found, create default object
             DrAeScriptBox.CONFIG = {
-                "ver": DrAeScriptBox.VERSION,
-                "options": {
-                    "columns": 2,
-                    "cellWidth": null,
-                    "cellHeight": 30
+                'ver': DrAeScriptBox.VERSION,
+                'options': {
+                    'columns': 2,
+                    'cellWidth': null,
+                    'cellHeight': 30
                 },
-                "scripts": {}
+                'scripts': {}
             }
         }
 
@@ -47,7 +61,7 @@ const DrAeScriptBox = {
         configDetailedCloseButton.addEventListener('click', DrAeScriptBox.closeAllowEditing);
 
         DrAeScriptBox.extensionSetup()
-        DrAeScriptBox.displayFeedback("Welcome!")
+        DrAeScriptBox.displayFeedback('Welcome!')
     },
 
     extensionSetup: async function() {
@@ -102,9 +116,9 @@ const DrAeScriptBox = {
                 }
 
                 button.addEventListener('click', () => {
-                    DrAeScriptBox.displayFeedback("Run " + script.scriptName)
+                    DrAeScriptBox.displayFeedback('Run ' + script.scriptName)
                     csInterface.evalScript('draesb_runScript("' + script.scriptPath + '")', (result) => {
-                        DrAeScriptBox.displayFeedback("Finished " + script.scriptName)
+                        DrAeScriptBox.displayFeedback('Finished ' + script.scriptName)
                     });
                 });
 
@@ -446,7 +460,7 @@ const DrAeScriptBox = {
         }
 
         DrAeScriptBox.extensionSetup();
-        DrAeScriptBox.displayFeedback("Config saved!")
+        DrAeScriptBox.displayFeedback('Config saved!')
     },
 
     saveConfigCollapsibleOptions: function () {
@@ -462,13 +476,13 @@ const DrAeScriptBox = {
 
     saveConfigSettings: function(config) {
         if (!DrAeScriptBox.ensureFolder(DrAeScriptBox.CONFIG_FILE_FOLDER_PATH)) {
-            alert("Could not create config folder.");
+            alert('Could not create config folder.');
             return false;
         }
 
         const result = window.cep.fs.writeFile(DrAeScriptBox.CONFIG_FILE_PATH, JSON.stringify(config, null, 2));
         if (result.err !== 0) {
-            alert("Error saving the config file.");
+            alert('Error saving the config file.');
             return false;
         }
 
@@ -507,10 +521,29 @@ const DrAeScriptBox = {
                 DrAeScriptBox.changeButtonName(button.parentNode.parentNode)
             });
 
-
             button.parentNode.appendChild(newElement);
             newEditNameButton.appendChild(editNameImg);
             button.parentNode.parentNode.appendChild(newEditNameButton);
+
+            // Color buttons
+            const gridColorsWrap = document.createElement('div');
+            gridColorsWrap.classList.add('grid-colors-wrap');
+            button.parentNode.parentNode.appendChild(gridColorsWrap);
+
+            for(const color in DrAeScriptBox.GRID_BTN_COLORS) {
+                const colorElement = document.createElement('button');
+                colorElement.classList.add('js-grid-color-btn');
+                colorElement.classList.add('config-btn');
+                colorElement.classList.add('color-btn');
+                colorElement.style.backgroundColor = DrAeScriptBox.GRID_BTN_COLORS[color].color;
+                colorElement.title = DrAeScriptBox.GRID_BTN_COLORS[color].title;
+
+                colorElement.addEventListener('click', () => {
+                    alert(color);
+                });
+
+                gridColorsWrap.appendChild(colorElement);
+            }
         }
 
         DrAeScriptBox.GRID_STACK_INSTANCE.setStatic(false);
@@ -664,7 +697,7 @@ const DrAeScriptBox = {
         temporaryButton.focus();
 
         temporaryButton.addEventListener('keydown', DrAeScriptBox.saveButtonNameOnEnterEvent);
-        temporaryButton.addEventListener('blur', DrAeScriptBox.saveButtonNames);
+        temporaryButton.addEventListener('blur', DrAeScriptBox.saveButtonNames); // todo needs to change in order for colors to work
 
         DrAeScriptBox.displayFeedback('Enter new button name...');
     },
